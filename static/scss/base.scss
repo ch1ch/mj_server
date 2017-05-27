@@ -1,0 +1,145 @@
+//基本样式表
+body,div,ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,p,form,fieldset,legend,input,textarea,th,tr,td,em {
+	margin:0;
+	padding:0;
+}
+body {
+	background-color:#fff !important;
+	font:14px/150% helvetica,"微软雅黑","microsoft yahei",Verdana, Lucida,arial,sans-serif,"黑体";
+	color:#333; 
+	position:relative; 
+	display:block; 
+	min-width:1200px; 
+	zoom:1; 
+}
+a {
+	color:#333;
+	text-decoration:none;
+	vertical-align:baseline;
+	cursor:pointer;
+
+	&:hover{
+		color:#1f7dd7;
+		text-decoration:none;
+	}
+}
+input,textarea { 
+	font-family:"微软雅黑","microsoft yahei";
+	font-size:12px;  
+	padding: 2px; 
+	vertical-align:middle; 
+	outline:none;
+}
+textarea {
+	line-height:18px; 
+	overflow:hidden; 
+	overflow-y:auto; 
+}
+select { 
+	padding:0;
+	font:12px Arial, Helvetica, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%; 
+}
+address,caption,cite,code,dfn,th,var,b,i,em {
+	font-style: normal; 
+	font-weight: normal;
+}
+table {
+	border-collapse: collapse; 
+	border-spacing: 0; 
+}
+ol,ul {
+	list-style: none;
+}
+:focus {
+	outline : 0;
+}
+fieldset,img {
+	border:0;
+}
+img{
+	background:url(../../images/autoimg.png) no-repeat center #f2f2f2;
+	background-size:50% auto;
+	vertical-align:middle;
+}
+caption,th {
+	text-align : left;
+}
+iframe{
+	vertical-align:middle;
+}
+// 公共类 
+.normal {
+	font-weight:normal; 
+	font-style:normal; 
+}
+.bold {
+	font-weight:bold; 
+}
+.none {
+	display:none; 
+}
+.block {
+	display:block; 
+}
+.t_2em {
+	text-indent:2em; 
+}
+
+// text-align 
+.tl {
+	text-align:left;
+}
+.tc {
+	text-align:center;
+}
+.tr {
+	text-align:right;
+}
+
+// float and clear 
+.fl {
+	float:left;
+}
+.fr {
+	float:right;
+}
+
+// text-size 
+.px12 {
+	font-size:12px; 
+}
+.px14 { 
+	font-size:14px;
+}
+.px16 {
+	font-size:16px; 
+}
+.px18 {
+	font-size:18px; 
+}
+.px20 {
+	font-size:20px;
+}
+.px22 {
+	font-size:22px;
+}
+.px24 {
+	font-size:24px; 
+}
+
+// line-height
+.lh16 {
+	line-height:160%; 
+}
+.lh18 {
+	line-height:180%; 
+}
+.lh20 {
+	line-height:200%; 
+}
+.lh25 {
+	line-height:250%; 
+}

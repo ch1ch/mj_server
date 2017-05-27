@@ -1,62 +1,20 @@
-// var app = require('express')();
-// var http = require('http').Server(app);
-// var io = require('socket.io')(http);
-// var path = require('path');
-
-// app.get('/', function(req, res){
-//    res.sendFile(__dirname + '/client/index.html');
-// });
-
-// io.on('connection', function(socket){
-
-// 	// socket.on('message', function (msg) {    
-//  //            io.emit('message',msg);
-
-//  //    });
-
-//     //客户端请求ws URL:  http://127.0.0.1:6001?roomid=k12_webcourse_room_1
-//     var roomid = socket.handshake.query.roomid;
-//     console.log(socket.handshake.query);
-//     console.log('worker pid: ' + process.pid  + ' join roomid: '+ roomid);
-
-//   // 	socket.on('join', function (data) {
-
-//   //       socket.join(roomid);    //加入房间
-
-     
-//   //     console.log(data.username + ' join, IP: ' + socket.client.conn.remoteAddress);
-//   // });
-
-//     socket.on('join', function (room) {
-//         socket.join(room);
-//         console.log(room);
-//         io.emit('message','加入'+room);
-//         inRoom = room;
-//     });
-
-//   	socket.on('chat message', function(msg){
-//     	console.log('message: ' + msg);
-//     	socket.send('sever:' + msg);
-//      io.emit('chat message', msg);
-//   	});
-
-
-// });
-
-// http.listen(3000, function(){
-//   console.log('listening on *:3000');
-// });
-
 var express = require('express');
 var path = require('path');
 var IO = require('socket.io');
 var router = express.Router();
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+
+var api = require('./routers/api');
+
 
 var app = express();
+
 var server = require('http').Server(app);
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'hbs');
 
 // 创建socket服务
 var socketIO = IO(server);
@@ -114,18 +72,18 @@ socketIO.on('connection', function (socket) {
 
 });
 
+// // room page
+// router.get('/room/:roomID', function (req, res) {
+//   res.sendFile('./public/index.html');
+// });
 // room page
-router.get('/room/:roomID', function (req, res) {
-  var roomID = req.params.roomID;
+router.get('/room', function (req, res) {
 
-  // 渲染页面数据(见views/room.hbs)
-  // res.render('room', {
-  //   roomID: roomID,
-  //   users: roomInfo[roomID]
-  // });
+  res.sendFile(path.join(__dirname, 'room.html'));
 });
 
 app.use('/', router);
+app.use('/api', api);
 
 server.listen(3000, function () {
   console.log('server listening on port 3000');
