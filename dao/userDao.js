@@ -4,7 +4,8 @@ var mysql = require('mysql');
 var $conf = require('./../conf/db');
 // var $util = require('../util');
 var $sql = require('./userSqlMapping');
- 
+var rooms={ '35503': { hoster: '12345' } };
+var cardrule={'1':1,'2':2};
 // 使用连接池，提升性能
 //var pool  = mysql.createPool($util.extend({}, $conf.mysql));
 var pool  = mysql.createPool($conf.mysql);
@@ -29,7 +30,7 @@ module.exports = {
      var id = +req.query.id; // 为了拼凑正确的sql语句，这里要转下整数
 
     pool.getConnection(function(err, connection) {
-      connection.query($sql.queryById, id, function(errs, result) {
+      connection.query($sql.getuser, id, function(errs, result) {
         console.log(result);
         console.log("--error--");
         console.log(errs);
@@ -39,7 +40,7 @@ module.exports = {
       });
     });
   },
- adduser: function (req, res, next) {
+  adduser: function (req, res, next) {
     pool.getConnection(function(err, connection) {
       // 获取前台页面传过来的参数
       var param = req.body;
@@ -64,13 +65,71 @@ module.exports = {
           };    
         // 以json形式，把操作结果返回给前台页面
         jsonWrite(res, result,errs);
-        connection.release();                 
+        connection.release();                
         }
- 
-       
       });
     });
   },
+
+  addRoom:function(req, res, next){
+    pool.getConnection(function(err, connection) {
+      var notid=true;
+      var roomid=0;
+      var hoster=req.body.hoster;
+      var gametype=req.body.gametype;
+      var costcard=parseInt(cardrule[gametype]) ;
+      connection.query($sql.getuser, hoster, function(errs, result) {
+        console.log(result);
+        console.log("--error--");
+        console.log(errs);
+        while(notid){
+        //parseInt(Math.random()*max,10)+1;
+         roomid=Math.floor(Math.random()*89999)+10000;
+          if (typeof rooms[roomid]== "undefined") {
+            notid=false;
+           rooms[roomid]={'hoster':hoster}
+         };
+        }
+        console.log(rooms);
+        var hascard=parseInt(result[0].card);
+        console.log(hascard);
+
+        //消耗一张或两张
+        if (hascard>=costcard) {
+          console.log('can player');
+        }else{
+          console.log('not ength');
+          res.json({
+            'code':'0',
+            'msg': 'card not ength'
+          }); 
+          return;
+        };
+        hascard-=costcard;
+        var _sql=" UPDATE `user` SET `card`="+hascard+" WHERE (`openid`='"+hoster+"'); ";
+        connection.query(_sql, function(_errs, _result) {
+        // connection.query($sql.redu,1,hoster, function(_errs, _result) {
+            console.log(_result);
+            console.log("--error--");
+            console.log(_errs);            
+            if (result) {
+              res.json({
+                'code':'1',
+                'date':{'roomid':roomid}
+              });                          
+            }else{
+              res.json({
+                'code':'0',
+                'date':{'roomid':roomid}
+              });                  
+            };
+           
+          connection.release();  
+        });
+      });
+    });    
+  },
+
 
   creatroom: function (req, res, next) {
     pool.getConnection(function(err, connection) {

@@ -1,9 +1,12 @@
-// CRUD SQL语句
 var user = {
 	addnewuser:'insert into user(openid,name,ico,card,tuijian,time) values(?,?,?,?,?,?);',
 	creatroom:'insert into room(roomid,hoster,user,type,rule,time) values(?,?,?,?,?,?);',
-	queryById: 'select * from user where id=?;',
-  	
+	getuser: 'select * from user where openid=?;',
+
+	reducecard:'UPDATE `user` SET `card`=`card`-? WHERE (`openid`=?);',
+	redu:"UPDATE `user` SET `card`=? WHERE `openid` = ?;",
+	//UPDATE `user` SET `card`=`card`-1 WHERE (`id`='109');
+  	//reducecard:'update `user` set `card` = IF(`card`<?, 0, `card`-?) WHERE `openid` = ?',
   	insert:'insert into user(name, age) values(?,?);',
 
   	update:'update user set name=?, age=? where id=?;',
