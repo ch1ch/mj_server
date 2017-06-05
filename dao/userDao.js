@@ -4,7 +4,10 @@ var mysql = require('mysql');
 var $conf = require('./../conf/db');
 // var $util = require('../util');
 var $sql = require('./userSqlMapping');
-var rooms={ '35503': { hoster: '12345' } };
+var rooms={ '35503': { hoster: '12345' ,users: [123,456],
+     time: 1496655299370,
+     type: '1',
+     rule: '123' } };
 var cardrule={'1':1,'2':2};
 // 使用连接池，提升性能
 //var pool  = mysql.createPool($util.extend({}, $conf.mysql));
@@ -77,7 +80,9 @@ module.exports = {
       var roomid=0;
       var hoster=req.body.hoster;
       var gametype=req.body.gametype;
+      var rule=req.body.rule;
       var costcard=parseInt(cardrule[gametype]) ;
+      var time=Date.now();
       connection.query($sql.getuser, hoster, function(errs, result) {
         console.log(result);
         console.log("--error--");
@@ -87,7 +92,7 @@ module.exports = {
          roomid=Math.floor(Math.random()*89999)+10000;
           if (typeof rooms[roomid]== "undefined") {
             notid=false;
-           rooms[roomid]={'hoster':hoster}
+           rooms[roomid]={'hoster':hoster,'users':[],'time':time,'type':gametype,'rule':rule}
          };
         }
         console.log(rooms);
@@ -107,8 +112,7 @@ module.exports = {
         };
         hascard-=costcard;
         var _sql=" UPDATE `user` SET `card`="+hascard+" WHERE (`openid`='"+hoster+"'); ";
-        connection.query(_sql, function(_errs, _result) {
-        // connection.query($sql.redu,1,hoster, function(_errs, _result) {
+        connection.query($sql.redu,[hascard,hoster], function(_errs, _result) {
             console.log(_result);
             console.log("--error--");
             console.log(_errs);            
@@ -131,37 +135,30 @@ module.exports = {
   },
 
 
-  creatroom: function (req, res, next) {
-    pool.getConnection(function(err, connection) {
-      // 获取前台页面传过来的参数
-      var param = req.body;
-      connection.query($sql.creatroom, [param.openid, param.name, param.ico, param.card, param.tuijian,param.time], function(errs, result) {
-        console.log(errs);
-
-       // console.log('-----------');
-      //  console.log(result);
-        if(result) {
-         // console.log(result);
-          result = {
-            code: 1,
-            msg:'增加成功'
-          };    
-        // 以json形式，把操作结果返回给前台页面
-        jsonWrite(res, result,errs);
-        connection.release();          
-        }else{
-          result = {
-            code: 0,
-            msg:errs
-          };    
-        // 以json形式，把操作结果返回给前台页面
-        jsonWrite(res, result,errs);
-        connection.release();                 
-        }
- 
-       
+  joinroom: function (req, res, next) {
+    var roomid = +req.query.roomid; 
+    var openid = +req.query.openid; 
+    console.log(rooms[roomid]);
+    if (typeof rooms[roomid]== "undefined") {
+      res.json({
+        code:'0',
+        msg: 'not found'
       });
-    });
+    }else{
+      if(rooms[roomid].users.length<3){
+        rooms[roomid].users.push(openid);
+        res.json({
+          code:'1',
+          msg: 'found'
+        });
+        console.log(rooms[roomid]);
+      }else{
+        res.json({
+          code:'0',
+          msg: 'people full'
+        });        
+      };    
+    }
   },  
 
 

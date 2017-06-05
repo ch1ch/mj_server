@@ -24,20 +24,7 @@ router.get('/', function(req, res, next) {
 });
 
   router.get('/joinroom.api', function(req, res, next){
-    var id = +req.query.id; 
-    console.log(id);
-    if (typeof rooms[id]== "undefined") {
-      res.json({
-        code:'0',
-        msg: 'not found'
-      });
-    }else{
-      res.json({
-        code:'1',
-        msg: 'found'
-      });      
-    };
-      //userDao.getuser(req, res, next);
+    userDao.joinroom(req, res, next);
 
   });
 

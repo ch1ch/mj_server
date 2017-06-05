@@ -112,39 +112,6 @@
         });   
       }
 
-      $('#joinroombtn').click(function(event) {
-        var id='35503';
-        var time=Date.now();
-        $.ajax({
-          type: "get",
-          method: "GET",
-          data: {id:id,time:time},
-          dataType: "json",
-          url: "http://localhost:3010/api/joinroom.api",
-          beforeSend: function(XMLHttpRequest){
-
-          },
-          success: function(data, textStatus){
-            console.log(data);
-            if (data.code==1) {
-              console.log('have');
-            }else{
-              console.log('not');
-             
-            };
-          },
-          complete: function(XMLHttpRequest, textStatus){
-          //  console.log(XMLHttpRequest);
-          },
-          error: function(err){
-            console.log(err);
-            //请求出错处理
-          }   
-        });         
-
-      });
-
-           
       $('#creatroombtn').click(function(event) {
         var time=Date.now();
         var gametype=1;
@@ -171,7 +138,44 @@
         });           
       });
 
-      $("#creatroombtn").trigger("click"); 
+      // $("#creatroombtn").trigger("click");       
+
+
+      $('#joinroombtn').click(function(event) {
+        var roomid='35503';
+        var youropenid=23456;
+        var time=Date.now();
+        $.ajax({
+          type: "get",
+          method: "GET",
+          data: {roomid:roomid,time:time,openid:youropenid},
+          dataType: "json",
+          url: "http://localhost:3010/api/joinroom.api",
+          beforeSend: function(XMLHttpRequest){
+
+          },
+          success: function(data, textStatus){
+            console.log(data);
+            if (data.code==1) {
+              console.log('have');
+            }else{
+              console.log('not');
+             
+            };
+          },
+          complete: function(XMLHttpRequest, textStatus){
+          //  console.log(XMLHttpRequest);
+          },
+          error: function(err){
+            console.log(err);
+            //请求出错处理
+          }   
+        });         
+
+      });
+
+           
+      
 
     });
   </script>
