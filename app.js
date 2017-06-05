@@ -9,6 +9,8 @@ var bodyParser = require('body-parser');
 
 var api = require('./routers/api');
 
+var port=3010;
+
 
 var app = express();
 
@@ -73,10 +75,10 @@ socketIO.on('connection', function (socket) {
 });
 
 // // room page
-// router.get('/room/:roomID', function (req, res) {
-//   res.sendFile('./public/index.html');
-// });
-// room page
+router.get('/gamestart', function (req, res) {
+  res.sendFile(path.join(__dirname, './public/start.html'));
+});
+
 router.get('/room', function (req, res) {
 
   res.sendFile(path.join(__dirname, 'room.html'));
@@ -85,6 +87,6 @@ router.get('/room', function (req, res) {
 app.use('/', router);
 app.use('/api', api);
 
-server.listen(3000, function () {
-  console.log('server listening on port 3000');
+server.listen(3010, function () {
+  console.log('server listening on port 3010');
 });

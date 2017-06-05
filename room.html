@@ -47,19 +47,74 @@
   <br/>
   按Enter键发送
   <button id="joinOrLeave">退出房间</button>
+   <button id="adduser">增加用户</button>
 
   <script src="/socket.io/socket.io.js"></script>
  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
     $(function () {
+
+      $.ajax({
+          type: "get",
+          method: "GET",
+          data: {id:'100'},
+          dataType: "json",
+          url: "http://localhost:3000/api/getuser.api",
+          beforeSend: function(XMLHttpRequest){
+
+          },
+          success: function(data, textStatus){
+            console.log(data);
+          },
+          complete: function(XMLHttpRequest, textStatus){
+          //  console.log(XMLHttpRequest);
+          },
+          error: function(err){
+            console.log(err);
+            //请求出错处理
+          }   
+      });        
+
+
+      $('#adduser').click(function(event) {
+        var openid='12345';
+        var name="张三";
+        var ico='img/head.jpg';
+        var tuijian='888';
+        $.ajax({
+          type: "post",
+          method: "POST",
+          data: {openid:openid,name:name,ico:ico,tuijian:tuijian},
+          dataType: "json",
+          url: "http://localhost:3000/api/adduser.api",
+          beforeSend: function(XMLHttpRequest){
+
+          },
+          success: function(data, textStatus){
+            console.log(data);
+          },
+          complete: function(XMLHttpRequest, textStatus){
+          //  console.log(XMLHttpRequest);
+          },
+          error: function(err){
+            console.log(err);
+            //请求出错处理
+          }   
+        });                
+        /* Act on the event */
+      });
+
+
+
+
       // ----------设置昵称-------------
       var userName = '';
-      while ($('#userName').text().trim() === '') {
-        userName = prompt("请设置你的昵称","");
-        $('#userName').text(userName);
-      }
-
-
+      // while ($('#userName').text().trim() === '') {
+      //   userName = prompt("请设置你的昵称","");
+      //   $('#userName').text(userName);
+      // }
+      $('#userName').text('ddd');
+      userName = 'ddd';
       // ---------创建连接-----------
       var socket = io();
 
@@ -70,7 +125,7 @@
 
       // 监听消息
       socket.on('msg', function (userName, msg) {
-        console.log("---");
+
         var message = '' +
             '<div class="message">' +
             '  <span class="user">' + userName + ': </span>' +
@@ -79,11 +134,10 @@
         $('#msglog').append(message);
         // 滚动条保持最下方
         $('#msglog').scrollTop($('#msglog')[0].scrollHeight);  
-        console.log(msg);
         $.ajax({
             type: "get",
             method: "GET",
-            data: {name:userName,age:message},
+            data: {name:userName,age:msg},
             dataType: "json",
             url: "http://localhost:3000/api/ajax2.api",
             beforeSend: function(XMLHttpRequest){
@@ -93,7 +147,7 @@
               console.log(data);
             },
             complete: function(XMLHttpRequest, textStatus){
-              console.log(XMLHttpRequest);
+            //  console.log(XMLHttpRequest);
             },
             error: function(err){
               console.log(err);

@@ -10,11 +10,11 @@ var $sql = require('./userSqlMapping');
 var pool  = mysql.createPool($conf.mysql);
 
 // 向前台返回JSON方法的简单封装
-var jsonWrite = function (res, ret) {
+var jsonWrite = function (res, ret,err) {
   if(typeof ret === 'undefined') {
     res.json({
-      code:'1',
-      msg: '操作失败'
+      code:'0',
+      msg: err
     });
   } else {
     res.json({
@@ -25,18 +25,101 @@ var jsonWrite = function (res, ret) {
 };
  
 module.exports = {
+  getuser: function (req, res, next) {
+     var id = +req.query.id; // 为了拼凑正确的sql语句，这里要转下整数
+
+    pool.getConnection(function(err, connection) {
+      connection.query($sql.queryById, id, function(errs, result) {
+        console.log(result);
+        console.log("--error--");
+        console.log(errs);
+        jsonWrite(res, result[0],errs);
+        connection.release();
+ 
+      });
+    });
+  },
+ adduser: function (req, res, next) {
+    pool.getConnection(function(err, connection) {
+      // 获取前台页面传过来的参数
+      var param = req.body;
+      connection.query($sql.addnewuser, [param.openid, param.name, param.ico, param.card, param.tuijian,param.time], function(errs, result) {
+        console.log(errs);
+
+       // console.log('-----------');
+      //  console.log(result);
+        if(result) {
+         // console.log(result);
+          result = {
+            code: 1,
+            msg:'增加成功'
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();          
+        }else{
+          result = {
+            code: 0,
+            msg:errs
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();                 
+        }
+ 
+       
+      });
+    });
+  },
+
+  creatroom: function (req, res, next) {
+    pool.getConnection(function(err, connection) {
+      // 获取前台页面传过来的参数
+      var param = req.body;
+      connection.query($sql.creatroom, [param.openid, param.name, param.ico, param.card, param.tuijian,param.time], function(errs, result) {
+        console.log(errs);
+
+       // console.log('-----------');
+      //  console.log(result);
+        if(result) {
+         // console.log(result);
+          result = {
+            code: 1,
+            msg:'增加成功'
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();          
+        }else{
+          result = {
+            code: 0,
+            msg:errs
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();                 
+        }
+ 
+       
+      });
+    });
+  },  
+
+
   add: function (req, res, next) {
     pool.getConnection(function(err, connection) {
       // 获取前台页面传过来的参数
-      var param = req.query || req.params;
- 
+      var param = req.query || req.params ;
+      // var param = req.body;
       // 建立连接，向表中插入值
       // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
-      console.log($sql.insert);
-      console.log(param.name, param.age);
+      //console.log($sql.insert);
+      //console.log(param);
+      //console.log(param.name, param.age);
       connection.query($sql.insert, [param.name, param.age], function(err, result) {
-        console.log(err);
-         console.log(result);
+       // console.log(err);
+       // console.log('-----------');
+       //  console.log(result);
         if(result) {
           console.log(result);
           result = {
@@ -98,18 +181,7 @@ module.exports = {
     });
  
   },
-  queryById: function (req, res, next) {
-    console.log(req.query);
-    var id = +req.query.id; // 为了拼凑正确的sql语句，这里要转下整数
-    pool.getConnection(function(err, connection) {
-      connection.query($sql.queryById, id, function(err, result) {
-        jsonWrite(res, result);
-        connection.release();
- 
-      });
-    });
-  },
-  queryAll: function (req, res, next) {
+queryAll: function (req, res, next) {
     console.log(req.query);
     pool.getConnection(function(err, connection) {
       connection.query($sql.queryAll, function(err, result) {
@@ -117,6 +189,6 @@ module.exports = {
         connection.release();
       });
     });
-  }
+  }    
  
 };
