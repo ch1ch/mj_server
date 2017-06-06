@@ -1,6 +1,5 @@
 var express = require('express');
 var path = require('path');
-var IO = require('socket.io');
 var router = express.Router();
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -13,66 +12,100 @@ var port=3010;
 
 
 var app = express();
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By",' 3.2.1')
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
 
 var server = require('http').Server(app);
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 
-// 创建socket服务
-var socketIO = IO(server);
-// 房间用户名单
+
+
+var socketIO = require('socket.io');
+var io = socketIO.listen(server);
+var counter = 0;
 var roomInfo = {};
+io.sockets.on('connection', function(socket){
+    console.log("connected!");
+    var url = socket.request.headers;
+    var user = ''; 
+    var roomID='';
+    // console.log(url);
+    // socket.join(roomID); 
 
-socketIO.on('connection', function (socket) {
-  // 获取请求建立socket连接的url
-  // 如: http://localhost:3000/room/room_1, roomID为room_1
-  var url = socket.request.headers.referer;
-  var splited = url.split('/');
-  var roomID = 'room1';   // 获取房间ID
-  var user = '';
 
-  socket.on('join', function (userName) {
-    user = userName;
+    socket.on('join', function (userName,roomid) {
+      user = userName;
+      roomID=roomid;
+      //console.log(userName,roomid);
+      // 将用户昵称加入房间名单中
+      if (!roomInfo[roomid]) {
+        roomInfo[roomid] = [];
+      }
+      roomInfo[roomid].push(user);
 
-    // 将用户昵称加入房间名单中
-    if (!roomInfo[roomID]) {
-      roomInfo[roomID] = [];
-    }
-    roomInfo[roomID].push(user);
+      socket.join(roomid);    // 加入房间
+      // 通知房间内人员
+      socket.to(roomid).emit('sys', user + '加入了房间', roomInfo[roomid]);  
+      console.log(user + '加入了' + roomid);
+    });    
 
-    socket.join(roomID);    // 加入房间
-    // 通知房间内人员
-    socketIO.to(roomID).emit('sys', user + '加入了房间', roomInfo[roomID]);  
-    console.log(user + '加入了' + roomID);
-  });
+    socket.on('leave', function () {
+      socket.emit('disconnect');
+    });
 
-  socket.on('leave', function () {
-    socket.emit('disconnect');
-  });
 
-  socket.on('disconnect', function () {
-    // 从房间名单中移除
-    var index = roomInfo[roomID].indexOf(user);
-    if (index !== -1) {
-      roomInfo[roomID].splice(index, 1);
-    }
+    io.sockets.emit('connected', { value: "server ok" });
 
-    socket.leave(roomID);    // 退出房间
-    socketIO.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
-    console.log(user + '退出了' + roomID);
-  });
+    socket.on('handshake', function(data){
+        console.log("receive handshake from client : " + data.value);
+    });
 
-  // 接收用户消息,发送相应的房间
-  socket.on('message', function (msg) {
-    // 验证如果用户不在房间内则不给发送
-    if (roomInfo[roomID].indexOf(user) === -1) {  
-      return false;
-    }
-    console.log(msg);
-    socketIO.to(roomID).emit('msg', user, msg);
-  });
+    socket.on('message', function(data){
+      console.log(data);
+     
+      if (roomInfo[roomID].indexOf(user) === -1) {  
+        return false;
+      }
+      socket.to(roomID).emit('msg', user, data);
+       console.log(roomInfo[roomID]);
 
+      // io.sockets.emit('confirmed', { value: "confirmed from server" });
+    });
+
+    socket.on('disconnect', function(){
+      socket.leave(roomID);    // 退出房间
+      io.sockets.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
+      console.log(user + '退出了' + roomID);      
+    });
 });
+
+
+// setInterval(function() {
+//     counter++;
+//    // console.log("Periodic broadcast:" + counter);
+//     io.sockets.emit('broadcast', { value: "count:" + counter });
+// }, 1000)
+
+
+
+
+// // room page
+// router.get('/room/:roomID', function (req, res) {
+//   var roomID = req.params.roomID;
+
+//   // 渲染页面数据(见views/room.hbs)
+//   res.render('room', {
+//     roomID: roomID,
+//     users: roomInfo[roomID]
+//   });
+// });
 
 // // room page
 router.get('/gamestart', function (req, res) {

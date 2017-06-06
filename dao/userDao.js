@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var $conf = require('./../conf/db');
 // var $util = require('../util');
 var $sql = require('./userSqlMapping');
-var rooms={ '35503': { hoster: '12345' ,users: [123,456],
+var rooms={ '35503': { hoster: '12345' ,users: [123],
      time: 1496655299370,
      type: '1',
      rule: '123' } };

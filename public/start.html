@@ -46,6 +46,8 @@
   <button id="startbtn">查询</button>
   <button id="joinroombtn">加入房间</button>
   <button id="creatroombtn">创建房间</button>
+   <button id="joinOrLeave">退出房间</button>
+   <textarea name="message" id="messageInput"></textarea>
   <script src="/socket.io/socket.io.js"></script>
  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
@@ -158,6 +160,7 @@
             console.log(data);
             if (data.code==1) {
               console.log('have');
+              joinGameRoom(roomid);
             }else{
               console.log('not');
              
@@ -174,8 +177,54 @@
 
       });
 
-           
-      
+      function joinGameRoom(roomid){
+        var youropenid=23456;
+        var socket = io('localhost:3010/gameroom/'+roomid);
+         console.log(socket);
+        // 加入房间
+        socket.on('connect', function () {
+          socket.emit('join', youropenid);
+          console.log(youropenid);
+        });
+
+        // 监听消息
+        socket.on('msg', function (userName, msg) {
+          console.log(userName,msg);
+         
+  
+        });
+
+        // 监听系统消息
+        socket.on('sys', function (sysMsg, users) {
+          console.log(sysMsg, users);
+
+        });
+
+        // 发送消息
+        $('#messageInput').keydown(function (e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            var msg = $(this).val();
+            $(this).val('');
+
+            socket.send(msg);
+          }
+        });
+
+        // 退出房间
+        $('#joinOrLeave').click(function () {
+          if ($(this).text() === '退出房间') {
+            $(this).text('进入房间');
+            socket.emit('leave');
+            var msg = '你已经退出了房间,重新发言请点击"进入房间"';
+            $('#msglog').append('<div class="sysMsg">'+msg+'</div>');
+          } else {
+            $(this).text('退出房间');
+            socket.emit('join', userName);
+          }
+
+        });        
+      }
 
     });
   </script>
