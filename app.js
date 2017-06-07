@@ -30,7 +30,10 @@ app.set('views', path.join(__dirname, 'views'));
 var socketIO = require('socket.io');
 var io = socketIO.listen(server);
 var counter = 0;
-var roomInfo = {};
+var roomInfo = {'35503': { hoster: '12345' ,users: [123],
+     time: 1496655299370,
+     type: '1',
+     rule: '123' }};
 io.sockets.on('connection', function(socket){
     console.log("connected!");
     var url = socket.request.headers;
@@ -43,17 +46,27 @@ io.sockets.on('connection', function(socket){
     socket.on('join', function (userName,roomid) {
       user = userName;
       roomID=roomid;
-      //console.log(userName,roomid);
+      console.log(roomInfo[roomid]);
       // 将用户昵称加入房间名单中
       if (!roomInfo[roomid]) {
-        roomInfo[roomid] = [];
-      }
-      roomInfo[roomid].push(user);
+        socket.emit('roominfo', userName, {code:'0',msg: 'not found'});
 
-      socket.join(roomid);    // 加入房间
-      // 通知房间内人员
-      socket.to(roomid).emit('sys', user + '加入了房间', roomInfo[roomid]);  
-      console.log(user + '加入了' + roomid);
+      }else{
+        if(roomInfo[roomid].users.length<3){
+          
+          roomInfo[roomid].users.push(user);
+
+          socket.join(roomid);    // 加入房间
+          socket.emit('roominfo', userName, {code:'1',msg: userName+' join '+roomid+' ok'});
+          // 通知房间内人员
+          socket.to(roomid).emit('sys', user + '加入了房间', roomInfo[roomid]);
+          console.log(user + '加入了' + roomid);
+
+        }else{
+          socket.emit('roominfo', userName, {code:'2',msg: 'people full'});
+        }; 
+      }         
+
     });    
 
     socket.on('leave', function () {
@@ -68,13 +81,13 @@ io.sockets.on('connection', function(socket){
     });
 
     socket.on('message', function(data){
-      console.log(data);
-     
-      if (roomInfo[roomID].indexOf(user) === -1) {  
+      console.log("message: " +data);
+
+      if (roomInfo[roomID].users.indexOf(user) === -1) {  
         return false;
       }
       socket.to(roomID).emit('msg', user, data);
-       console.log(roomInfo[roomID]);
+       //console.log(roomInfo[roomID]);
 
       // io.sockets.emit('confirmed', { value: "confirmed from server" });
     });

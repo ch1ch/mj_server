@@ -12,6 +12,7 @@ var cardrule={'1':1,'2':2};
 // 使用连接池，提升性能
 //var pool  = mysql.createPool($util.extend({}, $conf.mysql));
 var pool  = mysql.createPool($conf.mysql);
+var allpai=[0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27,28,28,28,28,29,29,29,29,30,30,30,30,31,31,31,31,32,32,32,32,33,33,33,33];
 
 // 向前台返回JSON方法的简单封装
 var jsonWrite = function (res, ret,err) {
@@ -27,7 +28,25 @@ var jsonWrite = function (res, ret,err) {
     });
   }
 };
- 
+
+function initPai(){
+  return Arrayshuffle(allpai);
+};
+
+function Arrayshuffle(arr) {
+  var input = arr;
+
+  for (var i = input.length-1; i >=0; i--) {
+
+      var randomIndex = Math.floor(Math.random()*(i+1));
+      var itemAtIndex = input[randomIndex];
+
+      input[randomIndex] = input[i];
+      input[i] = itemAtIndex;
+  }
+  return input;
+};
+
 module.exports = {
   getuser: function (req, res, next) {
      var id = +req.query.id; // 为了拼凑正确的sql语句，这里要转下整数
@@ -89,15 +108,16 @@ module.exports = {
         console.log(errs);
         while(notid){
         //parseInt(Math.random()*max,10)+1;
-         roomid=Math.floor(Math.random()*89999)+10000;
+          roomid=Math.floor(Math.random()*89999)+10000;
           if (typeof rooms[roomid]== "undefined") {
             notid=false;
-           rooms[roomid]={'hoster':hoster,'users':[],'time':time,'type':gametype,'rule':rule}
+            var pais=initPai();
+            rooms[roomid]={'hoster':hoster,'users':[],'time':time,'type':gametype,'rule':rule,'pailist':pais}
+         
          };
         }
-        console.log(rooms);
+
         var hascard=parseInt(result[0].card);
-        console.log(hascard);
 
         //消耗一张或两张
         if (hascard>=costcard) {
@@ -119,7 +139,7 @@ module.exports = {
             if (result) {
               res.json({
                 'code':'1',
-                'date':{'roomid':roomid}
+                'date':{'roomid':roomid,'pailist':rooms[roomid]}
               });                          
             }else{
               res.json({
