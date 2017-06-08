@@ -1,5 +1,3 @@
-// dao/userDao.js
-// 实现与MySQL交互
 var mysql = require('mysql');
 var $conf = require('./../conf/db');
 // var $util = require('../util');
