@@ -33,11 +33,14 @@ exports.initsock = function(server) {
 
 	function newGame(roomid,players){
 		var pais=initPai();
-	    console.log(players);
-	    io.sockets.in(roomid).emit('gameinfo',players[i], {code:3,pais:pais});
+		var pai={};
+		pai.p0=pais.slice(0,14);
+		pai.p1=pais.slice(14,27);
+		pai.p2=pais.slice(27,40);
+		pai.p3=pais.slice(40,53);
 	    for (var i = 0; i < players.length; i++) {
-	    	
-	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});	
+	    	 io.sockets.to(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i]});
+	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
 	};
 
