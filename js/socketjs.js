@@ -26,7 +26,7 @@ exports.initsock = function(server) {
 	};
 
 	function newGame(roomid,players){
-		console.log(players);
+		// console.log(players);
 		var pais=roomInfo[roomid].pais;
 		var pai={};
 		pai.p0=pais.slice(0,14);
@@ -34,9 +34,9 @@ exports.initsock = function(server) {
 		pai.p2=pais.slice(27,40);
 		pai.p3=pais.slice(40,53);
 	    for (var i = 0; i < players.length; i++) {
-	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i]});
-	    	console.log(pai['p'+i]);
-	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid}); 
+	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i],seat:i});
+	    	// console.log(pai['p'+i]);
+	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
 	};
 
@@ -70,6 +70,7 @@ exports.initsock = function(server) {
 
 	      }else{
 	        if(roomInfo[roomid].users.length<4){
+	        	var roomseat=roomInfo[roomid].users.length;
 	           roomInfo[roomid].users.push(userId);
 	          console.log(roomInfo[roomid].users);
 	          if (roomInfo[roomid].users.length==1) {
@@ -78,7 +79,7 @@ exports.initsock = function(server) {
 	          }
 	          console.log(roomInfo[roomid].users);
 
-	          socket.join(roomid);    // 加入房间
+	          socket.join(roomid);  // 加入房间
 	          socket.join(userId);
 
 
@@ -95,7 +96,7 @@ exports.initsock = function(server) {
 
 	        }else{
 	        	console.log('full');
-	          socket.emit('roominfo', userId, {code:'2',msg: 'people full'});
+	          socket.emit('roominfo', userId, {code:'3',msg: 'people full'});
 	        }; 
 	      }         
 	    });    
@@ -123,16 +124,20 @@ exports.initsock = function(server) {
 	      console.log("gameinfo: "+roomID );
 	      console.log(data);
 	      //console.log(roomInfo[roomID]);
-	      //code 1新游戏开始 
-	      if (data.code==1) {
+	      //code 1新游戏开始
+	      //console.log(data.player,roomInfo[roomID].hoster);
+	      if (data.code==1 && data.player==roomInfo[roomID].hoster) {
 	      	// var players=[roomInfo[roomID].hoster,roomInfo[roomID].users[0],roomInfo[roomID].users[1],roomInfo[roomID].users[2]]; 
-	      	newGame(roomID,roomInfo[roomID].users);
+	      	newGame(roomID,roomInfo[roomID].users); 
 	      }else if(data.code==4){//code 4 出牌
 	      	var turnplayer=roomInfo[roomID].player;
 	      	var outpaitype=data.paitype;
 	      	var theplayer=data.playerid;
+	      	var seat=data.seat;
 	      	roomInfo[roomID].player=(turnplayer+1)%4;
-	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype});
+	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat});
+	      }else if(data.code==6){
+	      	roomInfo[roomID].users=[];
 	      };
 	    });
 
