@@ -2,12 +2,9 @@ var mysql = require('mysql');
 var $conf = require('./../conf/db');
 // var $util = require('../util');
 var $sql = require('./userSqlMapping');
-var rooms={ '35503': { hoster: '12345' ,users: [123],
-     time: 1496655299370,
-     type: '1',
-     rule: '123' } };
+var rooms={ '355033': { hoster: '121176' } };
 var cardrule={'1':1,'2':2};
-// 使用连接池，提升性能
+// 使用连接池，提升性能 
 //var pool  = mysql.createPool($util.extend({}, $conf.mysql));
 var pool  = mysql.createPool($conf.mysql);
 var allpai=[0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,11,11,11,11,12,12,12,12,13,13,13,13,14,14,14,14,15,15,15,15,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,26,26,26,26,27,27,27,27,28,28,28,28,29,29,29,29,30,30,30,30,31,31,31,31,32,32,32,32,33,33,33,33];
@@ -35,7 +32,6 @@ function Arrayshuffle(arr) {
   var input = arr;
 
   for (var i = input.length-1; i >=0; i--) {
-
       var randomIndex = Math.floor(Math.random()*(i+1));
       var itemAtIndex = input[randomIndex];
 
@@ -102,22 +98,30 @@ module.exports = {
       var time=Date.now();
       connection.query($sql.getuser, hoster, function(errs, result) {
         console.log(result);
+        console.log(result);
         console.log("--error--");
         console.log(errs);
         while(notid){
         //parseInt(Math.random()*max,10)+1;
-          roomid=Math.floor(Math.random()*89999)+10000;
+          roomid=Math.floor(Math.random()*899999)+100000;
+          
           if (typeof rooms[roomid]== "undefined") {
             notid=false;
-            var pais=initPai();
-            rooms[roomid]={'hoster':hoster,'users':[],'time':time,'type':gametype,'rule':rule,'pailist':pais}
+            // var pais=initPai();
+            rooms[roomid]={'hoster':hoster,'time':time,'type':gametype,'rule':rule}
          
          };
         }
+        if (result[0]&&result[0].card) {
+          var hascard=parseInt(result[0].card);
+        }else{
+           res.json({
+            'code':'0',
+            'msg': 'not user'
+          }); 
+          return;
+        }
 
-        var hascard=parseInt(result[0].card);
-
-        //消耗一张或两张
         if (hascard>=costcard) {
           console.log('can player');
         }else{
@@ -130,14 +134,15 @@ module.exports = {
         };
         hascard-=costcard;
         var _sql=" UPDATE `user` SET `card`="+hascard+" WHERE (`openid`='"+hoster+"'); ";
+        roomid=355033;
         connection.query($sql.redu,[hascard,hoster], function(_errs, _result) {
-            console.log(_result);
+            //console.log(_result);
             console.log("--error--");
             console.log(_errs);            
             if (result) {
               res.json({
                 'code':'1',
-                'date':{'roomid':roomid,'pailist':rooms[roomid]}
+                'data':{'roomid':roomid,'type':rooms[roomid].type}
               });                          
             }else{
               res.json({
@@ -145,7 +150,6 @@ module.exports = {
                 'date':{'roomid':roomid}
               });                  
             };
-           
           connection.release();  
         });
       });
@@ -157,26 +161,26 @@ module.exports = {
     var roomid = +req.query.roomid; 
     var openid = +req.query.openid; 
     console.log(rooms[roomid]);
-    if (typeof rooms[roomid]== "undefined") {
-      res.json({
-        code:'0',
-        msg: 'not found'
-      });
-    }else{
-      if(rooms[roomid].users.length<3){
-        rooms[roomid].users.push(openid);
-        res.json({
-          code:'1',
-          msg: 'found'
-        });
-        console.log(rooms[roomid]);
-      }else{
-        res.json({
-          code:'0',
-          msg: 'people full'
-        });        
-      };    
-    }
+    // if (typeof rooms[roomid]== "undefined") {
+    //   res.json({
+    //     code:'0',
+    //     msg: 'not found'
+    //   });
+    // }else{
+    //   if(rooms[roomid].users.length<3){
+    //     rooms[roomid].users.push(openid);
+    //     res.json({
+    //       code:'1',
+    //       msg: 'found'
+    //     });
+    //     console.log(rooms[roomid]);
+    //   }else{
+    //     res.json({
+    //       code:'0',
+    //       msg: 'people full'
+    //     });        
+    //   };    
+    // }
   },  
 
 
