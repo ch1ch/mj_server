@@ -38,6 +38,7 @@ exports.initsock = function(server) {
 	    	// console.log(pai['p'+i]);
 	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
+	    roomInfo[roomid].painum=53;
 	};
 
 	io.sockets.on('connection', function(socket){
@@ -48,36 +49,37 @@ exports.initsock = function(server) {
 	    var roomID='';
 
 	    socket.on('join', function (userId,roomid) {
-	    	if (typeof roomInfo[roomid]== "undefined") {
-	    		var pais=initPai();
-	    		roomInfo[roomid]={ 
-					hoster: userId,
-					users: [],
-				    time: 1496655299370,
-				    type: '1',
-				    rule: '123',
-				 	turn:0, 
-				 	player:0,
-				 	pais:pais
-				};
-	    	}
+	   //  	if (typeof roomInfo[roomid]== "undefined") {
+	   //  		var pais=initPai();
+	   //  		roomInfo[roomid]={ 
+				// 	hoster: userId,
+				// 	users: [],
+				//     time: 1496655299370,
+				//     type: '1',
+				//     rule: '123',
+				//  	turn:0, 
+				//  	player:0,
+				//  	pais:pais
+				// };
+	   //  	} 
 	      user = userId;
 	      roomID=roomid; 
-	      //console.log(roomInfo[roomid]);
+	      // console.log(roomInfo[roomid]);
 	      // 将用户昵称加入房间名单中
 	      if (!roomInfo[roomid]) {
 	        socket.emit('roominfo', userId, {code:'0',msg: 'not found'});
 
 	      }else{
-	        if(roomInfo[roomid].users.length<4){
+	      	console.log(roomInfo[roomid].playernum);
+	        if(roomInfo[roomid].users.length<roomInfo[roomid].playernum){
 	        	var roomseat=roomInfo[roomid].users.length;
 	           roomInfo[roomid].users.push(userId);
-	          console.log(roomInfo[roomid].users);
-	          if (roomInfo[roomid].users.length==1) {
+	          // console.log(roomInfo[roomid].users);
+	          if (roomInfo[roomid].users.length==1 &&roomInfo[roomid].playernum==4) {
 		        roomInfo[roomid].users.push(123);
 		        roomInfo[roomid].users.push(456);
 	          }
-	          console.log(roomInfo[roomid].users);
+	          // console.log(roomInfo[roomid].users);
 
 	          socket.join(roomid);  // 加入房间
 	          socket.join(userId);
@@ -87,8 +89,8 @@ exports.initsock = function(server) {
 	          // 通知房间内人员
 	          io.sockets.in(roomid).emit('sys', user + '加入了房间', roomInfo[roomid]);
 	          console.log(user + '加入了' + roomid);
-	          console.log(roomInfo[roomid].users.length);
-	          if (roomInfo[roomid].users.length>=4) {
+	          //console.log(roomInfo[roomid].users.length); 
+	          if (roomInfo[roomid].users.length>=roomInfo[roomid].playernum) {
 	            io.sockets.in(roomid).emit('roominfo',userId, roomid+" 有 "+ roomInfo[roomid].users+' 齐了');
  				io.sockets.in(roomid).emit('roominfo',userId, {code:2,roomid:roomid});
 	           	//newGame(roomid,userId,players);
@@ -107,10 +109,6 @@ exports.initsock = function(server) {
 
 	    io.sockets.emit('connected', { value: "server ok" });
 
-	    socket.on('handshake', function(data){
-	        console.log("receive handshake from client : " + data.value);
-	    });
-
 	    socket.on('message', function(data){
 	      console.log("message: " +data);
 
@@ -119,36 +117,85 @@ exports.initsock = function(server) {
 	      }
 	      io.sockets.in(roomID).emit('msg', user, data);
 	    });
-  
+
+
+  		socket.on('roominfo', function(roomID,data){
+  			if (data.code==2) {//创建房间
+  				console.log('roominfo',roomID);
+  				// console.log(data); 
+  				var gametype=data.gametype;
+  				var rule=data.rule;
+  				var playernum=data.playernum;
+  				var userid=data.userid;
+  				var time=Date.now();
+  				var pais=initPai();
+  				var thepais=[];
+  				for (var i = 0; i < pais.length; i++) {
+  					thepais.push(pais[i]);
+  				}
+  				thepais[2]=0;
+  				thepais[3]=0;
+  				thepais[4]=1;
+  				thepais[5]=1;
+  				thepais[53]=1;
+  				thepais[54]=1;
+  				thepais[55]=1;
+  				thepais[56]=1;
+  				roomInfo[roomID]={ 
+					hoster: userid,
+					users: [],
+				    time: time,
+				    type: gametype,
+				    rule: rule,
+				    playernum:playernum,
+				 	turn:0,
+				 	player:0,
+				 	pais:thepais,
+				 	painum:0
+				};
+  			}
+  		});
+
 		socket.on('gameinfo', function(roomID,data){
 	      console.log("gameinfo: "+roomID );
 	      console.log(data);
-	      //console.log(roomInfo[roomID]);
 	      //code 1新游戏开始
 	      //console.log(data.player,roomInfo[roomID].hoster);
 	      if (data.code==1 && data.player==roomInfo[roomID].hoster) {
 	      	// var players=[roomInfo[roomID].hoster,roomInfo[roomID].users[0],roomInfo[roomID].users[1],roomInfo[roomID].users[2]]; 
 	      	newGame(roomID,roomInfo[roomID].users); 
-	      }else if(data.code==4){//code 4 出牌
+	      }else if(data.code==4){//code 4 出牌 
 	      	var turnplayer=roomInfo[roomID].player;
 	      	var outpaitype=data.paitype;
 	      	var theplayer=data.playerid;
 	      	var seat=data.seat;
+	      	var nextseat=(seat+5)%4;
+	      	if (nextseat==1 ||nextseat==2) {
+	      		nextseat=3;
+	      	}
 	      	roomInfo[roomID].player=(turnplayer+1)%4;
-	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat});
-	      }else if(data.code==6){
-	      	roomInfo[roomID].users=[];
+	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat,nextseat:nextseat,roomid:roomID,});
+	      }else if(data.code==6){//抓牌
+	      	var theplayer=data.playerid;
+	      	var seat=data.seat;
+	      	// console.log(roomInfo[roomID]);
+	      	var allpais=roomInfo[roomID].pais;
+	      	var nextpai=allpais[roomInfo[roomID].painum++];
+	      	io.sockets.to(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
+	      }else if(data.code==8){//碰 
+	      	var seat=data.seat;
+	      	var paitype=data.paitype;
 	      };
 	    });
 
 	    socket.on('disconnect', function(){
-	      	socket.leave(roomID);    // 退出房间
+	      	socket.leave(roomID);   // 退出房间
 	      	io.sockets.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
 	     
 	      	var index = roomInfo[roomID].users.indexOf(user);
 		    if (index !== -1) {
 		      roomInfo[roomID].users.splice(index, 1);
-		    }
+		    } 
 		    console.log(user + '退出了' + roomID); 
 	    });
 	});
