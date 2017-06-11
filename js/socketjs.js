@@ -33,8 +33,9 @@ exports.initsock = function(server) {
 		pai.p1=pais.slice(14,27);
 		pai.p2=pais.slice(27,40);
 		pai.p3=pais.slice(40,53);
+		var turnseat=roomInfo[roomid].turn%4;
 	    for (var i = 0; i < players.length; i++) {
-	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i],seat:i});
+	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i],seat:i,turnseat:turnseat});
 	    	// console.log(pai['p'+i]);
 	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
@@ -122,7 +123,7 @@ exports.initsock = function(server) {
   		socket.on('roominfo', function(roomID,data){
   			if (data.code==2) {//创建房间
   				console.log('roominfo',roomID);
-  				// console.log(data); 
+  				// console.log(data);  
   				var gametype=data.gametype;
   				var rule=data.rule;
   				var playernum=data.playernum;
@@ -137,10 +138,10 @@ exports.initsock = function(server) {
   				thepais[3]=0;
   				thepais[4]=1;
   				thepais[5]=1;
-  				thepais[53]=1;
-  				thepais[54]=1;
-  				thepais[55]=1;
-  				thepais[56]=1;
+  				thepais[53]=0;
+  				thepais[54]=0;
+  				thepais[55]=0;
+  				thepais[56]=0;
   				roomInfo[roomID]={ 
 					hoster: userid,
 					users: [],
@@ -185,6 +186,8 @@ exports.initsock = function(server) {
 	      }else if(data.code==8){//碰 
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
+	      	var fromseat=data.fromseat;
+	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:9,paitype:paitype,seat:seat,fromseat:fromseat});
 	      };
 	    });
 
