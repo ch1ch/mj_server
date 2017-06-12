@@ -28,7 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 var sock = require('./js/socketjs');
 sock.initsock(server);  
 
-// // room page
+// // room page 
 // router.get('/room/:roomID', function (req, res) {
 //   var roomID = req.params.roomID;
 
