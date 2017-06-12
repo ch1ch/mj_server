@@ -133,10 +133,20 @@ exports.initsock = function(server) {
   				for (var i = 0; i < pais.length; i++) {
   					thepais.push(pais[i]);
   				}
+  				thepais[0]=0;
+  				thepais[1]=0;
   				thepais[2]=0;
-  				thepais[3]=0;
-  				thepais[4]=0;
-  				thepais[5]=1;
+  				thepais[3]=1;
+  				thepais[4]=2;
+  				thepais[5]=3;
+  				thepais[6]=4;
+  				thepais[7]=5;
+  				thepais[8]=6;
+  				thepais[9]=7;
+  				thepais[10]=8;
+  				thepais[11]=8;
+  				thepais[12]=8;
+  				thepais[13]=7;
   				thepais[53]=0;
   				thepais[54]=0;
   				thepais[55]=1;
