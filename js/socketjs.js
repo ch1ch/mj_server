@@ -119,7 +119,6 @@ exports.initsock = function(server) {
 	      io.sockets.in(roomID).emit('msg', user, data);
 	    });
 
-
   		socket.on('roominfo', function(roomID,data){
   			if (data.code==2) {//创建房间
   				console.log('roominfo',roomID);
@@ -134,14 +133,25 @@ exports.initsock = function(server) {
   				for (var i = 0; i < pais.length; i++) {
   					thepais.push(pais[i]);
   				}
+  				thepais[0]=0;
+  				thepais[1]=0;
   				thepais[2]=0;
-  				thepais[3]=0;
-  				thepais[4]=1;
-  				thepais[5]=1;
+  				thepais[3]=1;
+  				thepais[4]=2;
+  				thepais[5]=3;
+  				thepais[6]=4;
+  				thepais[7]=5;
+  				thepais[8]=6;
+  				thepais[9]=7;
+  				thepais[10]=8;
+  				thepais[11]=8;
+  				thepais[12]=8;
+  				thepais[13]=7;
   				thepais[53]=0;
   				thepais[54]=0;
-  				thepais[55]=0;
-  				thepais[56]=0;
+  				thepais[55]=1;
+  				thepais[56]=1;
+  				thepais[56]=1;
   				roomInfo[roomID]={ 
 					hoster: userid,
 					users: [],
@@ -163,7 +173,7 @@ exports.initsock = function(server) {
 	      //code 1新游戏开始
 	      //console.log(data.player,roomInfo[roomID].hoster);
 	      if (data.code==1 && data.player==roomInfo[roomID].hoster) {
-	      	// var players=[roomInfo[roomID].hoster,roomInfo[roomID].users[0],roomInfo[roomID].users[1],roomInfo[roomID].users[2]]; 
+	      	// var players=[roomInfo[roomID].hoster,roomInfo[roomID].users[0],roomInfo[roomID].users[1],roomInfo[roomID].users[2]];   
 	      	newGame(roomID,roomInfo[roomID].users); 
 	      }else if(data.code==4){//code 4 出牌 
 	      	var turnplayer=roomInfo[roomID].player;
@@ -188,11 +198,16 @@ exports.initsock = function(server) {
 	      	var paitype=data.paitype;
 	      	var fromseat=data.fromseat;
 	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:9,paitype:paitype,seat:seat,fromseat:fromseat});
+	      }else if(data.code==10){//gang 
+	      	var seat=data.seat;
+	      	var paitype=data.paitype;
+	      	var fromseat=data.fromseat;
+	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
 	      };
 	    });
 
 	    socket.on('disconnect', function(){
-	      	socket.leave(roomID);   // 退出房间
+	      	socket.leave(roomID);   // 退出房间  
 	      	io.sockets.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
 	     
 	      	var index = roomInfo[roomID].users.indexOf(user);
