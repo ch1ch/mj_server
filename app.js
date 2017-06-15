@@ -3,8 +3,6 @@ var path = require('path');
 var router = express.Router();
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 
 var api = require('./routers/api');
 

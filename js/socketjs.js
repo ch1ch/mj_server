@@ -203,6 +203,11 @@ exports.initsock = function(server) {
 	      	var paitype=data.paitype;
 	      	var fromseat=data.fromseat;
 	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
+	      }else if(data.code==12){//hu 
+	      	var seat=data.seat;
+	      	var paitype=data.paitype;
+	      	var fromseat=data.fromseat;
+	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
 	      };
 	    });
 

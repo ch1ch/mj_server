@@ -2,54 +2,18 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var concat = require('gulp-concat')
-  , sass = require('gulp-ruby-sass')
   , minifycss = require('gulp-clean-css')
-  , autoprefixer = require('gulp-autoprefixer')
   , bsmain = require('browser-sync').create('bsmain')
   , clean = require('gulp-clean')
-  , cache = require('gulp-cache')
-  , imagemin = require('gulp-imagemin')
   , plumber = require('gulp-plumber')
   , nodemon = require('gulp-nodemon')
   , bsapi = require('browser-sync').create('bsapi')
-  , template = require('gulp-template')
-  , rename = require('gulp-rename')
-  , DEV_PORT = 910
-  , MAIN_PORT = 2900
-  , API_PORT = 2901;
+  , DEV_PORT = 3010
+  , MAIN_PORT = 3010
+  , API_PORT = 3010;
 
 
-// 生成版本号
-var date_rev = new Date()
-  , y, m, d, hh, mm, ss;
-y = date_rev.getFullYear();
-m = date_rev.getMonth() + 1;
-d = date_rev.getDate();
-hh = date_rev.getHours();
-mm = date_rev.getMinutes();
-ss = date_rev.getSeconds();
 
-m = m > 10 ? m : '0' + m;
-d = d > 10 ? d : '0' + d;
-date_rev = [y, m, d, hh, mm, ss].join('');
-
-/*文件路径配置*/
-var fpath = {
-  src: 'static',
-  dest: 'public'
-};
-
-/*报错处理*/
-function handleError(err) {
-  gutil.beep();
-  gutil.log(err);
-};
-
-// gulp.task('minify', function() {
-//    gulp.src('js/app.js')
-//     .pipe(uglify())
-//     .pipe(gulp.dest('dist'))
-// });
 
 gulp.task('js', function () {
   return gulp.src('js/**/*.js')
@@ -60,31 +24,8 @@ gulp.task('js', function () {
     .pipe(bsmain.stream());
 });
 
-/*编译sass文件*/ 
-gulp.task('css', function() {
-  return sass(fpath.src + '/scss/*.{sass,scss}', {
-    defaultEncoding: "utf-8",
-    noCache: true
-  })
-    .on('error', sass.logError)
-    .pipe(minifycss({compatibility: 'ie7'}))
-    .pipe(autoprefixer())
-    .pipe(gulp.dest(fpath.dest + '/css'))
-    .pipe(bsmain.stream())
-});
 
 
-/*压缩图片*/
-gulp.task('images', function() {
-  return gulp.src(fpath.src + '/images/**/')
-    .pipe(plumber())
-    .pipe(cache(imagemin({optimizationLevel:3, progressive:true, interlaced:true})))
-    .pipe(gulp.dest(fpath.dest + '/images'));
-});
-
-gulp.task('js-watch', ['js'], function() {
-  bsmain.reload();
-});
 
 /*文件改动监听*/
 gulp.task('watch',  function() {
@@ -99,14 +40,6 @@ gulp.task('clean', function() {
   return gulp.src([fpath.dest], {read: false})
     .pipe(plumber())
     .pipe(clean());
-});
-
-/* 版本号增加到config.js文件 */
-gulp.task('configsrc', function() {
-  return gulp.src('/conf/config.js')
-    .pipe(template({date_rev: date_rev}))
-    .pipe(rename('config.js'))
-    .pipe(gulp.dest('conf/config/'));
 });
 
 
@@ -173,10 +106,10 @@ function initBrowsersyncApi() {
 gulp.task('browser-sync',['nodemon'], initBrowsersyncApi);
 
 
-/*任务执行*/
-gulp.task('output', ['css', 'images', 'js'], function() {
-  gulp.start('configsrc');
-});
+// /*任务执行*/
+// gulp.task('output', [ 'js'], function() {
+//   gulp.start('');
+// });
 
 
 /*启动*/
