@@ -12,27 +12,30 @@ var concat = require('gulp-concat')
   , MAIN_PORT = 3010
   , API_PORT = 3010;
 
-
-
-
 gulp.task('js', function () {
   return gulp.src('js/**/*.js')
     .pipe(plumber())
     .pipe(jshint())
     .pipe(uglify())
-    .pipe(gulp.dest(fpath.dest +'/js'))
+    .pipe(gulp.dest('/js'))
     .pipe(bsmain.stream());
 });
 
+/*报错处理*/
+function handleError(err) {
+  gutil.beep();
+  gutil.log(err);
+};
 
-
-
+gulp.task('js-watch', ['js'], function() {
+  bsmain.reload();
+});
 /*文件改动监听*/
 gulp.task('watch',  function() {
-  gulp.watch(fpath.src + 'routers/*.js',['js-watch']);
-  gulp.watch(fpath.src + 'dao/*.js',['js-watch']);
-  gulp.watch(fpath.src + 'js/*.js', ['js-watch']);
-  gulp.watch(fpath.src + '/app.js', ['js-watch']);
+  gulp.watch('routers/*.js',['js-watch']);
+  gulp.watch('dao/*.js',['js-watch']);
+  gulp.watch('js/*.js', ['js-watch']);
+  gulp.watch('/app.js', ['js-watch']);
 });
 
 /*清空*/
@@ -103,18 +106,12 @@ function initBrowsersyncApi() {
   }, initBrowsersyncMain);
 }
 
+
+
 gulp.task('browser-sync',['nodemon'], initBrowsersyncApi);
-
-
-// /*任务执行*/
-// gulp.task('output', [ 'js'], function() {
-//   gulp.start('');
-// });
-
 
 /*启动*/
 gulp.task('default', function() {
   gulp.start('watch');
   gulp.start('nodemon');
-  
 });

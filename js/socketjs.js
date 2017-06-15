@@ -162,7 +162,11 @@ exports.initsock = function(server) {
 				 	turn:0,
 				 	player:0,
 				 	pais:thepais,
-				 	painum:0
+				 	painum:0,
+				 	p0pais:[],
+				 	p1pais:[],
+				 	p2pais:[],
+				 	p3pais:[]
 				};
   			}
   		});
@@ -173,7 +177,6 @@ exports.initsock = function(server) {
 	      //code 1新游戏开始
 	      //console.log(data.player,roomInfo[roomID].hoster);
 	      if (data.code==1 && data.player==roomInfo[roomID].hoster) {
-	      	// var players=[roomInfo[roomID].hoster,roomInfo[roomID].users[0],roomInfo[roomID].users[1],roomInfo[roomID].users[2]];   
 	      	newGame(roomID,roomInfo[roomID].users); 
 	      }else if(data.code==4){//code 4 出牌 
 	      	var turnplayer=roomInfo[roomID].player;
@@ -181,10 +184,13 @@ exports.initsock = function(server) {
 	      	var theplayer=data.playerid;
 	      	var seat=data.seat;
 	      	var nextseat=(seat+5)%4;
+	      	//测试
 	      	if (nextseat==1 ||nextseat==2) {
 	      		nextseat=3;
 	      	}
+	      	roomInfo[roomID]['p'+seat+'pais']=data.pais;
 	      	roomInfo[roomID].player=(turnplayer+1)%4;
+	      	//console.log(roomInfo[roomID]);
 	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat,nextseat:nextseat,roomid:roomID,});
 	      }else if(data.code==6){//抓牌
 	      	var theplayer=data.playerid;
@@ -202,12 +208,16 @@ exports.initsock = function(server) {
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
 	      	var fromseat=data.fromseat;
+	      	var theplayer=data.playerid;
+	      	var allpais=roomInfo[roomID].pais;
+	      	var nextpai=allpais[roomInfo[roomID].painum++];
+	      	io.sockets.to(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
 	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
-	      }else if(data.code==12){//hu 
+
+	      }else if(data.code==12){//hu  
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
-	      	var fromseat=data.fromseat;
-	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
+	      	io.sockets.to(roomID).emit('gameinfo',seat,{code:13,paitype:paitype,seat:seat});
 	      };
 	    });
 
