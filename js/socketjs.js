@@ -29,13 +29,13 @@ exports.initsock = function(server) {
 		// console.log(players);
 		var pais=roomInfo[roomid].pais;
 		var pai={};
-		pai.p0=pais.slice(0,14);
-		pai.p1=pais.slice(14,27);
-		pai.p2=pais.slice(27,40);
-		pai.p3=pais.slice(40,53);
+		roomInfo[roomid].p0pais=pais.slice(0,14);
+		roomInfo[roomid].p1pais=pais.slice(14,27);
+		roomInfo[roomid].p2pais=pais.slice(27,40);
+		roomInfo[roomid].p3pais=pais.slice(40,53);
 		var turnseat=roomInfo[roomid].turn%4;
 	    for (var i = 0; i < players.length; i++) {
-	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:pai['p'+i],player:players[i],seat:i,turnseat:turnseat});
+	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:roomInfo[roomid]['p'+i+'pais'],player:players[i],seat:i,turnseat:turnseat});
 	    	// console.log(pai['p'+i]);
 	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
@@ -53,6 +53,9 @@ exports.initsock = function(server) {
 	      userId = playerinfo.playerid;
 	      roomID=roomid; 
 	      console.log(playerinfo);
+	      if (typeof roomInfo[roomid] == "undefined" ||typeof roomInfo[roomid].playernum == "undefined") {
+	      	return false;
+	      }
 	      console.log('想加入'+roomid,roomInfo[roomid].playernum,'人房 目前玩家有 '+roomInfo[roomid].users.length);
 	      // 将用户昵称加入房间名单中
 	      if (!roomInfo[roomid]) {
@@ -99,7 +102,7 @@ exports.initsock = function(server) {
 	          //console.log(roomInfo[roomid].users.length); 
 	          if (roomInfo[roomid].users.length>=roomInfo[roomid].playernum) {
 	            io.sockets.in(roomid).emit('roominfo',userId, roomid+" 有 "+ roomInfo[roomid].users+' 齐了');
- 				io.sockets.in(roomid).emit('roominfo',userId, {code:2,roomid:roomid});
+ 				io.sockets.in(roomid).emit('roominfo',userId, {code:2,roomid:roomid,playerinfo:roomInfo[roomid].playerlist});
 	           	//newGame(roomid,userId,players);
 	          };
 
@@ -170,6 +173,8 @@ exports.initsock = function(server) {
 				 	player:0,
 				 	pais:thepais,
 				 	painum:0,
+				 	outpai:0,
+				 	gamenum:1,
 				 	p0pais:[],
 				 	p1pais:[],
 				 	p2pais:[],
@@ -191,6 +196,7 @@ exports.initsock = function(server) {
 	      	var theplayer=data.playerid;
 	      	var seat=data.seat;
 	      	var nextseat=(seat+5)%4;
+	      	roomInfo[roomID].outpai=data.paitype;
 	      	//测试
 	      	if (nextseat==1 ||nextseat==2) {
 	      		nextseat=3;
@@ -198,19 +204,22 @@ exports.initsock = function(server) {
 	      	roomInfo[roomID]['p'+seat+'pais']=data.pais;
 	      	roomInfo[roomID].player=(turnplayer+1)%4;
 	      	//console.log(roomInfo[roomID]);
-	      	io.sockets.to(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat,nextseat:nextseat,roomid:roomID,});
+	      	io.sockets.in(roomID).emit('gameinfo',theplayer, {code:5,outpaitype:outpaitype,seat:seat,nextseat:nextseat,roomid:roomID,});
 	      }else if(data.code==6){//抓牌
 	      	var theplayer=data.playerid;
 	      	var seat=data.seat;
 	      	// console.log(roomInfo[roomID]);
 	      	var allpais=roomInfo[roomID].pais;
 	      	var nextpai=allpais[roomInfo[roomID].painum++];
-	      	io.sockets.to(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
+	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
+	      	var furturepai=136-roomInfo[roomID].painum;
+	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:15,seat:seat,furturepai:furturepai});
+
 	      }else if(data.code==8){//碰 
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
 	      	var fromseat=data.fromseat;
-	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:9,paitype:paitype,seat:seat,fromseat:fromseat});
+	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:9,paitype:paitype,seat:seat,fromseat:fromseat});
 	      }else if(data.code==10){//gang 
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
@@ -218,13 +227,16 @@ exports.initsock = function(server) {
 	      	var theplayer=data.playerid;
 	      	var allpais=roomInfo[roomID].pais;
 	      	var nextpai=allpais[roomInfo[roomID].painum++];
-	      	io.sockets.to(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
-	      	io.sockets.to(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
+	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
+	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
 
 	      }else if(data.code==12){//hu  
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
-	      	io.sockets.to(roomID).emit('gameinfo',seat,{code:13,paitype:paitype,seat:seat});
+	      	var nowpai=[roomInfo[roomID].p0pais,roomInfo[roomID].p1pais,roomInfo[roomID].p2pais,roomInfo[roomID].p3pais];
+	      	console.log('nowpai');
+	      	console.log(roomInfo[roomID].p0pais);
+	      	io.sockets.in(roomID).emit('gameinfo',seat,{code:13,paitype:paitype,seat:seat,nowpai:nowpai,turn:roomInfo[roomID].turn,fromseat:data.outseat,outpai:roomInfo[roomID].outpai,gamenum:roomInfo[roomID].gamenum});
 
 	      }else if(data.code==14){//清空房间
 	      	roomInfo[roomID].users=[];
@@ -235,7 +247,9 @@ exports.initsock = function(server) {
 	    socket.on('disconnect', function(){
 	      	socket.leave(roomID);   // 退出房间  
 	      	io.sockets.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
-	     
+	     	if (typeof roomInfo[roomID] == "undefined" ||typeof roomInfo[roomID].users == "undefined") {
+	      	return false;
+	      	}
 	      	var index = roomInfo[roomID].users.indexOf(user);
 		    if (index !== -1) {
 		      roomInfo[roomID].users.splice(index, 1);
