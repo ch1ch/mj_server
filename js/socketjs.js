@@ -175,6 +175,7 @@ exports.initsock = function(server) {
 				 	painum:0,
 				 	outpai:0,
 				 	gamenum:1,
+				 	ganglist:[[],[],[],[]],
 				 	p0pais:[],
 				 	p1pais:[],
 				 	p2pais:[],
@@ -191,6 +192,9 @@ exports.initsock = function(server) {
 	      if (data.code==1 && data.player==roomInfo[roomID].hoster) {
 	      	newGame(roomID,roomInfo[roomID].users); 
 	      }else if(data.code==4){//code 4 出牌 
+	      	if (typeof roomInfo[roomID] == "undefined" ||typeof roomInfo[roomID].player == "undefined") {
+		      	return false;
+		     }
 	      	var turnplayer=roomInfo[roomID].player;
 	      	var outpaitype=data.paitype;
 	      	var theplayer=data.playerid;
@@ -220,6 +224,7 @@ exports.initsock = function(server) {
 	      	var paitype=data.paitype;
 	      	var fromseat=data.fromseat;
 	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:9,paitype:paitype,seat:seat,fromseat:fromseat});
+
 	      }else if(data.code==10){//gang 
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
@@ -227,6 +232,8 @@ exports.initsock = function(server) {
 	      	var theplayer=data.playerid;
 	      	var allpais=roomInfo[roomID].pais;
 	      	var nextpai=allpais[roomInfo[roomID].painum++];
+	      	roomInfo[roomID].ganglist[seat].push({seat,fromseat,paitype});
+
 	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
 	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
 
@@ -234,9 +241,9 @@ exports.initsock = function(server) {
 	      	var seat=data.seat;
 	      	var paitype=data.paitype;
 	      	var nowpai=[roomInfo[roomID].p0pais,roomInfo[roomID].p1pais,roomInfo[roomID].p2pais,roomInfo[roomID].p3pais];
-	      	console.log('nowpai');
-	      	console.log(roomInfo[roomID].p0pais);
-	      	io.sockets.in(roomID).emit('gameinfo',seat,{code:13,paitype:paitype,seat:seat,nowpai:nowpai,turn:roomInfo[roomID].turn,fromseat:data.outseat,outpai:roomInfo[roomID].outpai,gamenum:roomInfo[roomID].gamenum});
+	      	//console.log('nowpai');
+	      	//console.log(roomInfo[roomID].p0pais);
+	      	io.sockets.in(roomID).emit('gameinfo',seat,{code:13,paitype:paitype,seat:seat,nowpai:nowpai,turn:roomInfo[roomID].turn,fromseat:data.outseat,outpai:roomInfo[roomID].outpai,gamenum:roomInfo[roomID].gamenum,ganglist:roomInfo[roomID].ganglist,hutype:data.hutype});
 
 	      }else if(data.code==14){//清空房间
 	      	roomInfo[roomID].users=[];
