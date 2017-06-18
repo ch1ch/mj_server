@@ -156,11 +156,26 @@ exports.initsock = function(server) {
   				thepais[11]=8;
   				thepais[12]=8;
   				thepais[13]=7;
-  				thepais[53]=0;
-  				thepais[54]=0;
+
+  				thepais[40]=0;
+  				thepais[41]=0;
+  				thepais[42]=0;
+  				thepais[43]=1;
+  				thepais[44]=2;
+  				thepais[45]=3;
+  				thepais[46]=4;
+  				thepais[47]=5;
+  				thepais[48]=6;
+  				thepais[49]=7;
+  				thepais[50]=8;
+  				thepais[51]=8;
+  				thepais[52]=8;
+
+  				thepais[53]=1;
+  				thepais[54]=1;
   				thepais[55]=1;
-  				thepais[56]=1;
-  				thepais[56]=1;
+  				thepais[56]=2;
+  				thepais[56]=2;
   				roomInfo[roomID]={ 
 					hoster: userid,
 					users: [],
@@ -234,7 +249,7 @@ exports.initsock = function(server) {
 	      	var nextpai=allpais[roomInfo[roomID].painum++];
 	      	roomInfo[roomID].ganglist[seat].push({seat,fromseat,paitype});
 
-	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:7,nextpai:nextpai,seat:seat});
+	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:111,nextpai:nextpai,seat:seat,fromseat:fromseat});
 	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
 
 	      }else if(data.code==12){//hu  
