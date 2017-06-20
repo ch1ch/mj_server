@@ -129,8 +129,9 @@ exports.initsock = function(server) {
 	    });
 
   		socket.on('roominfo', function(roomID,data){
+  			console.log('roominfo',roomID,data);
   			if (data.code==2) {//创建房间
-  				console.log('roominfo',roomID);
+  				
   				// console.log(data);  
   				var gametype=data.gametype;
   				var rule=data.rule;
@@ -200,7 +201,14 @@ exports.initsock = function(server) {
   			} else if(data.code==4){
   				var turn=roomInfo[roomID].turn;
   				var seat=data.seat;
-  				if (seat!=turn) {turn=(turn+5)%4};
+  				var pais=initPai();
+  				roomInfo[roomID].pais=pais;
+  				roomInfo[roomID].painum=0;
+  				roomInfo[roomID].gamenum++;
+  				if (seat!=turn) {
+  					roomInfo[roomID].turn=(turn+5)%4;
+  				};
+  				console.log('renew game');
   				newGame(roomID,roomInfo[roomID].users);
   			}
   		});
