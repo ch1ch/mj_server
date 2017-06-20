@@ -35,7 +35,7 @@ exports.initsock = function(server) {
 		roomInfo[roomid].p3pais=pais.slice(40,53);
 		var turnseat=roomInfo[roomid].turn%4;
 	    for (var i = 0; i < players.length; i++) {
-	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:roomInfo[roomid]['p'+i+'pais'],player:players[i],seat:i,turnseat:turnseat});
+	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:roomInfo[roomid]['p'+i+'pais'],player:players[i],seat:i,turnseat:turnseat,scorelist:roomInfo[roomid].scorelist});
 	    	// console.log(pai['p'+i]);
 	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
@@ -191,11 +191,17 @@ exports.initsock = function(server) {
 				 	outpai:0,
 				 	gamenum:1,
 				 	ganglist:[[],[],[],[]],
+				 	scorelist:[100,100,100,100],
 				 	p0pais:[],
 				 	p1pais:[],
 				 	p2pais:[],
 				 	p3pais:[]
 				};
+  			} else if(data.code==4){
+  				var turn=roomInfo[roomID].turn;
+  				var seat=data.seat;
+  				if (seat!=turn) {turn=(turn+5)%4};
+  				newGame(roomID,roomInfo[roomID].users);
   			}
   		});
 
@@ -247,7 +253,7 @@ exports.initsock = function(server) {
 	      	var theplayer=data.playerid;
 	      	var allpais=roomInfo[roomID].pais;
 	      	var nextpai=allpais[roomInfo[roomID].painum++];
-	      	roomInfo[roomID].ganglist[seat].push({seat,fromseat,paitype});
+	      	roomInfo[roomID].ganglist[seat].push({seat:seat,fromseat:fromseat,paitype:paitype});
 
 	      	io.sockets.in(theplayer).emit('gameinfo',theplayer, {code:111,nextpai:nextpai,seat:seat,fromseat:fromseat});
 	      	io.sockets.in(roomID).emit('gameinfo',seat, {code:11,paitype:paitype,seat:seat,fromseat:fromseat});
