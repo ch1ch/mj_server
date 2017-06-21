@@ -143,40 +143,40 @@ exports.initsock = function(server) {
   				for (var i = 0; i < pais.length; i++) {
   					thepais.push(pais[i]);
   				}
-  				thepais[0]=0;
-  				thepais[1]=0;
-  				thepais[2]=0;
-  				thepais[3]=1;
-  				thepais[4]=2;
-  				thepais[5]=3;
-  				thepais[6]=4;
-  				thepais[7]=5;
-  				thepais[8]=6;
-  				thepais[9]=7;
-  				thepais[10]=8;
-  				thepais[11]=8;
-  				thepais[12]=8;
-  				thepais[13]=7;
+  				//thepais[0]=0;
+  				//thepais[1]=0;
+  				//thepais[2]=0;
+  				//thepais[3]=1;
+  				//thepais[4]=2;
+  				//thepais[5]=3;
+  				//thepais[6]=4;
+  				//thepais[7]=5;
+  				//thepais[8]=6;
+  				//thepais[9]=7;
+  				//thepais[10]=8;
+  				//thepais[11]=8;
+  				//thepais[12]=8;
+  				//thepais[13]=7;
 
-  				thepais[40]=0;
-  				thepais[41]=0;
-  				thepais[42]=0;
-  				thepais[43]=1;
-  				thepais[44]=2;
-  				thepais[45]=3;
-  				thepais[46]=4;
-  				thepais[47]=5;
-  				thepais[48]=6;
-  				thepais[49]=7;
-  				thepais[50]=8;
-  				thepais[51]=8;
-  				thepais[52]=8;
+  				//thepais[40]=0;
+  				//thepais[41]=0;
+  				//thepais[42]=0;
+  				//thepais[43]=1;
+  				//thepais[44]=2;
+  				//thepais[45]=3;
+  				//thepais[46]=4;
+  				//thepais[47]=5;
+  				//thepais[48]=6;
+  				//thepais[49]=7;
+  				//thepais[50]=8;
+  				//thepais[51]=8;
+  				//thepais[52]=8;
 
-  				thepais[53]=1;
-  				thepais[54]=1;
-  				thepais[55]=1;
-  				thepais[56]=2;
-  				thepais[56]=2;
+  				//thepais[53]=1;
+  				//thepais[54]=1;
+  				//thepais[55]=1;
+  				//thepais[56]=2;
+  				//thepais[56]=2;
   				roomInfo[roomID]={ 
 					hoster: userid,
 					users: [],
@@ -283,14 +283,17 @@ exports.initsock = function(server) {
 	    socket.on('disconnect', function(){
 	      	socket.leave(roomID);   // 退出房间  
 	      	io.sockets.to(roomID).emit('sys', user + '退出了房间', roomInfo[roomID]);
-	     	if (typeof roomInfo[roomID] == "undefined" ||typeof roomInfo[roomID].users == "undefined") {
-	      	return false;
-	      	}
-	      	var index = roomInfo[roomID].users.indexOf(user);
-		    if (index !== -1) {
-		      roomInfo[roomID].users.splice(index, 1);
-		    } 
-		    console.log(user + '退出了' + roomID); 
+
+	     //	if (typeof roomInfo[roomID] == "undefined" ||typeof roomInfo[roomID].users == "undefined") {
+	      //	return false;
+	      //	}
+			
+	      	//var index = roomInfo[roomID].users.indexOf(user);
+		  //  if (index !== -1) {
+		 //     roomInfo[roomID].users.splice(index, 1);
+		 //   } 
+		  //  console.log(user + '退出了' + roomID); 
+			roomInfo[roomID]=undefined;
 	    });
 	});
 
