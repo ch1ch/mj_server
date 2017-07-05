@@ -183,6 +183,38 @@ module.exports = {
     // }
   },  
 
+   addShare: function (req, res, next) {
+    pool.getConnection(function(err, connection) {
+      // 获取前台页面传过来的参数
+      var param = req.query || req.params ;
+      // var param = req.body;
+      // 建立连接，向表中插入值
+      // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
+      //console.log($sql.insert);
+      //console.log(param);
+      //console.log(param.name, param.age);
+      connection.query($sql.addshare, [param.type,param.guestid, param.ua,param.time], function(err, result) {
+       // console.log(err);
+       // console.log('-----------');
+       //  console.log(result);
+        if(result) {
+          console.log(result);
+          result = {
+            code: 200,
+            msg:'增加成功'
+          };    
+        }
+ 
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result);
+ 
+        // 释放连接 
+        connection.release();
+      });
+    });
+  },
+
+
 
   add: function (req, res, next) {
     pool.getConnection(function(err, connection) {

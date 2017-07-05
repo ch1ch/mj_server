@@ -31,4 +31,7 @@ router.get('/', function(req, res, next) {
   router.post('/addroom.api', urlencodedParser, function(req, res, next){
       userDao.addRoom(req, res, next);
 });
+  router.post('/share.api', urlencodedParser, function(req, res, next){
+      userDao.addShare(req, res, next);
+  });
 module.exports = router;
