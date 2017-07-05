@@ -7,6 +7,9 @@ var user = {
 	redu:"UPDATE `user` SET `card`=? WHERE `openid` = ?;",
 	//UPDATE `user` SET `card`=`card`-1 WHERE (`id`='109');
   	//reducecard:'update `user` set `card` = IF(`card`<?, 0, `card`-?) WHERE `openid` = ?',
+
+  	addshare:'insert into share(type,guestid,ua,time) values(?,?,?,?);',
+
   	insert:'insert into user(name, age) values(?,?);',
 
   	update:'update user set name=?, age=? where id=?;',
