@@ -186,17 +186,17 @@ module.exports = {
    addShare: function (req, res, next) {
     pool.getConnection(function(err, connection) {
       // 获取前台页面传过来的参数
-      var param = req.query || req.params ;
-      // var param = req.body;
+      // var param = req.query || req.params ;
+      var param = req.body;
       // 建立连接，向表中插入值
       // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
-      //console.log($sql.insert);
-      //console.log(param);
+     // console.log($sql.addshare);
+     //console.log(param);
       //console.log(param.name, param.age);
       connection.query($sql.addshare, [param.type,param.guestid, param.ua,param.time], function(err, result) {
-       // console.log(err);
+      //  console.log(err);
        // console.log('-----------');
-       //  console.log(result);
+      //   console.log(result);
         if(result) {
           console.log(result);
           result = {
