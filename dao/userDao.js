@@ -43,15 +43,47 @@ function Arrayshuffle(arr) {
 
 module.exports = {
   getuser: function (req, res, next) {
-     var id = +req.query.id; // 为了拼凑正确的sql语句，这里要转下整数
+     var openid = req.query.openid; 
+     var nickname = req.query.nickname; 
+     var imgurl = req.query.imgurl; 
+     var time=Date.now();
 
     pool.getConnection(function(err, connection) {
-      connection.query($sql.getuser, id, function(errs, result) {
+      connection.query($sql.getuser, openid, function(errs, result) {
         console.log(result);
-        console.log("--error--");
-        console.log(errs);
-        jsonWrite(res, result[0],errs);
-        connection.release();
+        if (result=='') {
+          console.log("need new");
+          connection.query($sql.addnewuser, [openid, nickname, imgurl, 0, '',time], function(errs, result) {
+            console.log(errs);
+
+             // console.log('-----------');
+            //  console.log(result);
+            if(result) {
+             // console.log(result);
+              result = {
+                code: 1,
+                msg:'增加成功'
+              };    
+            // 以json形式，把操作结果返回给前台页面
+            jsonWrite(res, result,errs);
+            connection.release();          
+            }else{
+              result = {
+                code: 0,
+                msg:errs
+              };    
+            // 以json形式，把操作结果返回给前台页面
+            jsonWrite(res, result,errs);
+            connection.release();                
+            }
+          });
+        }else{
+           console.log("--error--");
+          console.log(errs);
+          jsonWrite(res, result[0],errs);
+          connection.release();
+        }
+       
  
       });
     });
@@ -63,8 +95,8 @@ module.exports = {
       connection.query($sql.addnewuser, [param.openid, param.name, param.ico, param.card, param.tuijian,param.time], function(errs, result) {
         console.log(errs);
 
-       // console.log('-----------');
-      //  console.log(result);
+         // console.log('-----------');
+        //  console.log(result);
         if(result) {
          // console.log(result);
           result = {
