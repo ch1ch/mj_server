@@ -18,20 +18,24 @@ router.get('/', function(req, res, next) {
       userDao.getuser(req, res, next);
   });
 
- router.post('/adduser.api', urlencodedParser, function(req, res, next){
+  router.post('/adduser.api', urlencodedParser, function(req, res, next){
     req.body.card=2;
     userDao.adduser(req, res, next);
-});
+  });
 
   router.get('/joinroom.api', function(req, res, next){
     userDao.joinroom(req, res, next);
-
   });
 
   router.post('/addroom.api', urlencodedParser, function(req, res, next){
       userDao.addRoom(req, res, next);
-});
+  });
   router.post('/share.api', urlencodedParser, function(req, res, next){
       userDao.addShare(req, res, next);
   });
+
+  router.get('/cashstatus.api', urlencodedParser, function(req, res, next){
+      userDao.cashstatus(req, res, next);
+  });
+
 module.exports = router;

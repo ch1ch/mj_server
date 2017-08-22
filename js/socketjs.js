@@ -26,7 +26,7 @@ exports.initsock = function(server) {
 	};
 
 	function newGame(roomid,players){
-		// console.log(players);
+		console.log(players);
 		var pais=roomInfo[roomid].pais;
 		var pai={};
 		roomInfo[roomid].p0pais=pais.slice(0,14);
@@ -36,7 +36,7 @@ exports.initsock = function(server) {
 		var turnseat=roomInfo[roomid].turn%4;
 	    for (var i = 0; i < players.length; i++) {
 	    	 io.sockets.in(players[i]).emit('gameinfo',players[i], {code:3,pais:roomInfo[roomid]['p'+i+'pais'],player:players[i],seat:i,turnseat:turnseat,scorelist:roomInfo[roomid].scorelist});
-	    	// console.log(pai['p'+i]);
+	    	 console.log(roomInfo[roomid]['p'+i+'pais']);
 	    	//_socket.emit('gameinfo',userId, {code:1,roomid:roomid});
 	    };
 	    roomInfo[roomid].painum=53;
@@ -119,16 +119,7 @@ exports.initsock = function(server) {
 
 	    io.sockets.emit('connected', { value: "server ok" });
 
-	    socket.on('message', function(data){
-	      console.log("message: " +data);
-
-	      if (roomInfo[roomID].users.indexOf(user) === -1) {  
-	        return false;
-	      }
-	      io.sockets.in(roomID).emit('msg', user, data);
-	    });
-
-  		socket.on('roominfo', function(roomID,data){
+	   	socket.on('roominfo', function(roomID,data){
   			console.log('roominfo',roomID,data);
   			if (data.code==2) {//创建房间
   				

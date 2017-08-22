@@ -78,7 +78,7 @@ module.exports = {
             }
           });
         }else{
-           console.log("--error--");
+          console.log("--error--");
           console.log(errs);
           jsonWrite(res, result[0],errs);
           connection.release();
@@ -215,7 +215,7 @@ module.exports = {
     // }
   },  
 
-   addShare: function (req, res, next) {
+  addShare: function (req, res, next) {
     pool.getConnection(function(err, connection) {
       // 获取前台页面传过来的参数
       // var param = req.query || req.params ;
@@ -242,6 +242,113 @@ module.exports = {
  
         // 释放连接 
         connection.release();
+      });
+    });
+  },
+
+  cashstatus: function (req, res, next) {
+    var time=Date.now();
+    var orderid=req.query.orderid;
+    var openid=req.query.openid;
+    var status=req.query.status;
+    var money=req.query.money;
+    var time=Date.now();
+    //console.log(orderid, status);
+    pool.getConnection(function(err, connection) {
+      connection.query($sql.getorder, orderid, function(errs, result) {
+        if (errs) {
+           console.log('--------------e');
+           console.log(errs)
+        }else{
+           console.log(result);
+        };
+       
+        if (result=='') {
+          //console.log("need new");
+          if (status==2) {
+            console.log($sql.addcard);
+            connection.query($sql.addcard,[money,openid], function(_errs, _result) {
+              if (_errs) {               
+                console.log("--error----8");
+                console.log(_errs); 
+              }else{
+                 console.log(_result);
+              };
+                        
+              if (_result) {
+
+              }
+            });
+          };
+        
+          connection.query($sql.addorder, [orderid,openid, status, money, time], function(__errs, __result) {
+            if (__errs) {
+              console.log(__errs);
+              console.log('-----------');
+              console.log(result);
+            };
+            
+            if(__result) {
+
+             // console.log(result);
+              results = {
+                code: 1,
+                msg:'增加成功'
+              };    
+            // 以json形式，把操作结果返回给前台页面
+            jsonWrite(res, results,errs);
+            connection.release();          
+            }else{
+              results = {
+                code: 0,
+                msg:errs
+              };    
+            // 以json形式，把操作结果返回给前台页面
+            jsonWrite(res, results,errs);
+            connection.release();                
+            }
+          });
+        }else{
+          if (errs) {
+            console.log("--error-----1------");
+            console.log(errs);
+          };
+          
+          // if (result[0].status) {};
+          if (result[0].status!=2) {
+            connection.query($sql.updateorder,[status,orderid], function(_errs, _result) {
+              if (_errs) {
+                console.log(_result);
+                console.log("----error--2--");
+                console.log(_errs);
+              };
+                          
+              if (_result) {
+              }
+            });
+            if (status==2) {
+              connection.query($sql.addcard,[money,openid], function(_errs, _result) {
+                if (_errs) {
+                  console.log(_result);
+                  console.log("--error--3---");
+                  console.log(_errs);
+                };
+                           
+                if (_result) {
+
+                }
+              });
+            };
+
+
+          };
+              
+
+          jsonWrite(res, result[0],errs);
+          connection.release();
+        }
+       
+ 
       });
     });
   },
@@ -278,6 +385,9 @@ module.exports = {
       });
     });
   },
+
+
+
   delete: function (req, res, next) {
     // delete by Id
     pool.getConnection(function(err, connection) {
@@ -321,8 +431,9 @@ module.exports = {
         connection.release();
       });
     });
- 
   },
+
+
 queryAll: function (req, res, next) {
     console.log(req.query);
     pool.getConnection(function(err, connection) {
