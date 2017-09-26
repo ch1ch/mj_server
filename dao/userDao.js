@@ -135,7 +135,7 @@ module.exports = {
         console.log(errs);
         while(notid){
         //parseInt(Math.random()*max,10)+1;
-          roomid=Math.floor(Math.random()*899999)+100000;
+          roomid=Math.floor(Math.random()*89999)+10000;
           
           if (typeof rooms[roomid]== "undefined") {
             notid=false;
@@ -166,7 +166,7 @@ module.exports = {
         };
         hascard-=costcard;
         var _sql=" UPDATE `user` SET `card`="+hascard+" WHERE (`openid`='"+hoster+"'); ";
-        roomid=355033;
+        // roomid=355033;
         connection.query($sql.redu,[hascard,hoster], function(_errs, _result) {
             //console.log(_result);
             console.log("--error--");
@@ -190,29 +190,29 @@ module.exports = {
 
 
   joinroom: function (req, res, next) {
-    var roomid = +req.query.roomid; 
-    var openid = +req.query.openid; 
+    var roomid = +req.query.roomid;
+    var openid = +req.query.openid;
+    console.log("some join---------------");
     console.log(rooms[roomid]);
-    // if (typeof rooms[roomid]== "undefined") {
-    //   res.json({
-    //     code:'0',
-    //     msg: 'not found'
-    //   });
-    // }else{
-    //   if(rooms[roomid].users.length<3){
-    //     rooms[roomid].users.push(openid);
-    //     res.json({
-    //       code:'1',
-    //       msg: 'found'
-    //     });
-    //     console.log(rooms[roomid]);
-    //   }else{
-    //     res.json({
-    //       code:'0',
-    //       msg: 'people full'
-    //     });        
-    //   };    
-    // }
+    if (typeof rooms[roomid]== "undefined") {
+      res.json({
+        code:'0',
+        msg: 'not found'
+      });
+    }else{
+      // if(typeof rooms[roomid].users!= "undefined" && rooms[roomid].users.length<=3){
+      //   rooms[roomid].users.push(openid);
+        res.json({
+          code:'1',
+          msg: 'found'
+        });
+      // }else{
+      //   res.json({
+      //     code:'0',
+      //     msg: 'people full'
+      //   });        
+      // };    
+    }
   },  
 
   addShare: function (req, res, next) {
