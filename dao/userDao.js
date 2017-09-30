@@ -371,7 +371,7 @@ module.exports = {
                     code: 3,
                     msg:'此订单已经使用'
                   };    
-            jsonWrite(res, results,errs);
+            jsonWrite(res, results);
             connection.release();
           };
 
