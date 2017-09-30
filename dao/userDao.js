@@ -260,7 +260,7 @@ module.exports = {
            console.log('--------------e');
            console.log(errs)
         }else{
-           console.log(result);
+           //console.log(result);
         };
        
         if (result=='') {
@@ -311,6 +311,7 @@ module.exports = {
             }
           });
         }else{
+			console.log("it has ");
           if (errs) {
             console.log("--error-----1------");
             console.log(errs);
@@ -321,7 +322,7 @@ module.exports = {
               jsonWrite(res, results,errs);
               connection.release();
           };
-          
+          console.log(result[0]);
           // if (result[0].status) {};
           if (result[0].status!=2) {
             connection.query($sql.updateorder,[status,orderid], function(_errs, _result) {
@@ -367,15 +368,16 @@ module.exports = {
               });
             };
           }else{
+			  console.log("it is added");
             results = {
                     code: 3,
                     msg:'此订单已经使用'
                   };    
             jsonWrite(res, results);
-            connection.release();
+            //connection.release();
           };
-
-          jsonWrite(res, result[0],errs);
+		
+          //jsonWrite(res, result[0],errs);
           connection.release();
         }
        
