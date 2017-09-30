@@ -253,7 +253,7 @@ module.exports = {
     var status=req.query.status;
     var money=req.query.money;
     var time=Date.now();
-    //console.log(orderid, status);
+    console.log(orderid, status);
     pool.getConnection(function(err, connection) {
       connection.query($sql.getorder, orderid, function(errs, result) {
         if (errs) {
@@ -264,7 +264,7 @@ module.exports = {
         };
        
         if (result=='') {
-          //console.log("need new");
+          console.log("IT IS new ORDER");
           if (status==2) {
             console.log($sql.addcard);
             connection.query($sql.addcard,[money,openid], function(_errs, _result) {
@@ -272,7 +272,9 @@ module.exports = {
                 console.log("--error----8");
                 console.log(_errs); 
               }else{
-                 console.log(_result);
+                 // console.log(_result);
+                 console.log("成功");
+
               };
                         
               if (_result) {
@@ -284,13 +286,14 @@ module.exports = {
           connection.query($sql.addorder, [orderid,openid, status, money, time], function(__errs, __result) {
             if (__errs) {
               console.log(__errs);
-              console.log('-----------');
-              console.log(result);
+              console.log('order --err---------');
+              // console.log(result);
             };
             
             if(__result) {
 
-             // console.log(result);
+              console.log(result);
+              console.log("order 增加成功");
               results = {
                 code: 1,
                 msg:'增加成功'
