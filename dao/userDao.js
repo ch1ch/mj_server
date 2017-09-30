@@ -273,7 +273,7 @@ module.exports = {
                 console.log(_errs); 
               }else{
                  // console.log(_result);
-                 console.log("成功");
+                 console.log("addcard成功");
 
               };
                         
@@ -292,7 +292,7 @@ module.exports = {
             
             if(__result) {
 
-              console.log(result);
+              console.log(__result);
               console.log("order 增加成功");
               results = {
                 code: 1,
@@ -306,15 +306,20 @@ module.exports = {
                 code: 0,
                 msg:errs
               };    
-            // 以json形式，把操作结果返回给前台页面
-            jsonWrite(res, results,errs);
-            connection.release();                
+              jsonWrite(res, results,errs);
+              connection.release();                
             }
           });
         }else{
           if (errs) {
             console.log("--error-----1------");
             console.log(errs);
+            results = {
+                code: 0,
+                msg:errs
+              };    
+              jsonWrite(res, results,errs);
+              connection.release();
           };
           
           // if (result[0].status) {};
@@ -324,9 +329,21 @@ module.exports = {
                 console.log(_result);
                 console.log("----error--2--");
                 console.log(_errs);
-              };
+                results = {
+                  code: 0,
+                  msg:_errs
+                };    
+                jsonWrite(res, results,_errs);
+                connection.release();
+                };
                           
               if (_result) {
+                results = {
+                  code: 2,
+                  msg:_result
+                };    
+                jsonWrite(res, results,_errs);
+                connection.release();
               }
             });
             if (status==2) {
@@ -338,14 +355,18 @@ module.exports = {
                 };
                            
                 if (_result) {
+                  console.log("addcard成功");
+                  results = {
+                    code: 1,
+                    msg:'增加成功'
+                  };    
+                  jsonWrite(res, results,_errs);
+                  connection.release();
 
                 }
               });
             };
-
-
           };
-              
 
           jsonWrite(res, result[0],errs);
           connection.release();
