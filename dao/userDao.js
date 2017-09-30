@@ -366,6 +366,13 @@ module.exports = {
                 }
               });
             };
+          }else{
+            results = {
+                    code: 3,
+                    msg:'此订单已经使用'
+                  };    
+            jsonWrite(res, results,_errs);
+            connection.release();
           };
 
           jsonWrite(res, result[0],errs);
