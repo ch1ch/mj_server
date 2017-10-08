@@ -79,20 +79,20 @@ exports.initsock = function(server) {
 
 	            console.log('player length ',roomInfo[roomid].users.length,roomInfo[roomid].playernum);
 	           //测试数据 
-	         	if (roomInfo[roomid].users.length==1 &&roomInfo[roomid].playernum==4) {
+	         	// if (roomInfo[roomid].users.length==1 &&roomInfo[roomid].playernum==4) {
 
-			        roomInfo[roomid].users.push(123);
-			        playernum=roomInfo[roomid].playerlist.length;
-			        roomInfo[roomid].playerlist.push({playerid:'234',imghead:"res/play/ui/header.png",playername:'张wu',seat:1})
-			        io.sockets.in(roomid).emit('roominfo', userId, {code:'1',msg: '234 join '+roomid+' ok',playerinfo:roomInfo[roomid].playerlist,roomseat:1});
+			        // roomInfo[roomid].users.push(123);
+			        // playernum=roomInfo[roomid].playerlist.length;
+			        // roomInfo[roomid].playerlist.push({playerid:'234',imghead:"res/play/ui/header.png",playername:'张wu',seat:1})
+			        // io.sockets.in(roomid).emit('roominfo', userId, {code:'1',msg: '234 join '+roomid+' ok',playerinfo:roomInfo[roomid].playerlist,roomseat:1});
 
-			        roomInfo[roomid].users.push(456);
-			        playernum=roomInfo[roomid].playerlist.length;
-			        roomInfo[roomid].playerlist.push({playerid:'456',imghead:"res/play/ui/header.png",playername:'张liu',seat:2})
-			        io.sockets.in(roomid).emit('roominfo', userId, {code:'1',msg: '456 join '+roomid+' ok',playerinfo:roomInfo[roomid].playerlist,roomseat:2});
+			        // roomInfo[roomid].users.push(456);
+			        // playernum=roomInfo[roomid].playerlist.length;
+			        // roomInfo[roomid].playerlist.push({playerid:'456',imghead:"res/play/ui/header.png",playername:'张liu',seat:2})
+			        // io.sockets.in(roomid).emit('roominfo', userId, {code:'1',msg: '456 join '+roomid+' ok',playerinfo:roomInfo[roomid].playerlist,roomseat:2});
 
-			        console.log(roomInfo[roomid].playerlist);
-	          	}
+			        // console.log(roomInfo[roomid].playerlist);
+	          // 	}
 
 	         
 	          // 通知房间内人员
