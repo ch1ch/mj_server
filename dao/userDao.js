@@ -43,10 +43,10 @@ function Arrayshuffle(arr) {
 
 module.exports = {
   getuser: function (req, res, next) {
-     var openid = req.query.openid; 
-     var nickname = req.query.nickname; 
-     var imgurl = req.query.imgurl; 
-     var time=Date.now();
+    var openid = req.query.openid; 
+    var nickname = req.query.nickname; 
+    var imgurl = req.query.imgurl; 
+    var time=Date.now();
 
     pool.getConnection(function(err, connection) {
       connection.query($sql.getuser, openid, function(errs, result) {
@@ -88,6 +88,32 @@ module.exports = {
       });
     });
   },
+
+
+
+  getuserrank: function (req, res, next) {
+
+    pool.getConnection(function(err, connection) {
+      connection.query($sql.getuserrank, function(errs, result) {
+        console.log(result);
+        if (result=='') {
+          result = {
+            code: 2,
+            msg:'查询失败'
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();          
+        }else{
+          console.log(errs);
+          jsonWrite(res, result,errs);
+          connection.release();
+        }
+ 
+      });
+    });
+  },
+
   adduser: function (req, res, next) {
     pool.getConnection(function(err, connection) {
       // 获取前台页面传过来的参数

@@ -3,6 +3,9 @@ var user = {
 	creatroom:'insert into room(roomid,hoster,user,type,rule,time) values(?,?,?,?,?,?);',
 	getuser: 'select * from user where openid=?;',
 
+  getuserrank: 'select * from user order by `totalmoney` desc limit 0,10;',
+
+
 	reducecard:'UPDATE `user` SET `card`=`card`-? WHERE (`openid`=?);',
   addcard:'UPDATE `user` SET `card`=`card`+? WHERE (`openid`=?);',
 	redu:"UPDATE `user` SET `card`=? WHERE `openid` = ?;",

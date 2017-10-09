@@ -18,6 +18,10 @@ router.get('/', function(req, res, next) {
       userDao.getuser(req, res, next);
   });
 
+  router.get('/getuserrank.api', function(req, res, next){
+      userDao.getuserrank(req, res, next);
+  });
+
   router.post('/adduser.api', urlencodedParser, function(req, res, next){
     req.body.card=2;
     userDao.adduser(req, res, next);
