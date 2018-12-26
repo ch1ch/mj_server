@@ -272,6 +272,35 @@ module.exports = {
     });
   },
 
+   login: function (req, res, next) {
+   
+      var param = req.body;
+      var username=param.name;
+      var password=param.password;
+      if (username=="admin" && password=="pass") {
+        console.log(result);
+          result = {
+            code: 0,
+            key:"test123"
+            msg:'登录成功'
+          };    
+        jsonWrite(res, result);
+      }else{
+          console.log(result);
+          result = {
+            code: 1,
+            key:""
+            msg:'用户名密码错误'
+          };    
+        jsonWrite(res, result);
+      }
+        ;
+        
+          
+    
+   
+  },
+
   cashstatus: function (req, res, next) {
     var time=Date.now();
     var orderid=req.query.orderid;
