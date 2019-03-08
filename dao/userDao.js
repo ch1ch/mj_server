@@ -13,12 +13,12 @@ var allpai=[0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,
 var jsonWrite = function (res, ret,err) {
   if(typeof ret === 'undefined') {
     res.json({
-      code:'0',
+      code:'1',
       msg: err
     });
   } else {
     res.json({
-      code:'1',
+      code:'0',
       data: ret
     });
   }
@@ -274,23 +274,28 @@ module.exports = {
 
    login: function (req, res, next) {
    
-      var param = req.body;
-      var username=param.name;
+      //var param = req.body;
+	  var param = req.query || req.params ;
+	  //console.log(req)
+      var username=param.username;
       var password=param.password;
+	  console.log(username)
+	  console.log(password)
       if (username=="admin" && password=="pass") {
-        console.log(result);
+        
           result = {
             code: 0,
-            key:"test123"
+            key:"query123",
             msg:'登录成功'
           };    
         jsonWrite(res, result);
       }else{
-          console.log(result);
+         
           result = {
             code: 1,
-            key:""
-            msg:'用户名密码错误'
+            key:"",
+            msg:'用户名'+param.username+'密码错误'+param.password,
+			user:param.username
           };    
         jsonWrite(res, result);
       }
