@@ -4,13 +4,14 @@
   "description": "mj server",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.15.3",
-    "path": "^0.11.14",
-    "socket.io": "^2.0.1",
+    "@alicloud/pop-core": "^1.7.6",
     "debug": "~2.6.3",
+    "express": "^4.15.3",
     "morgan": "~1.8.1",
+    "mysql": "latest",
+    "path": "^0.11.14",
     "serve-favicon": "~2.4.2",
-    "mysql": "latest"
+    "socket.io": "^2.0.1"
   },
   "devDependencies": {
     "browser-sync": "^2.11.0",

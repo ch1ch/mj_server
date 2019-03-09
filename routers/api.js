@@ -47,4 +47,11 @@ router.get('/', function(req, res, next) {
       userDao.cashstatus(req, res, next);
   });
 
+  router.post('/addtumsg.api', urlencodedParser, function(req, res, next){
+    userDao.addtumsg(req, res, next);
+  });
+ router.get('/gettumsg.api', function(req, res, next){
+      userDao.gettumsg(req, res, next);
+  });
+
 module.exports = router;

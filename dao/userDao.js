@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var $conf = require('./../conf/db');
+ const Core = require('@alicloud/pop-core');
 // var $util = require('../util');
 var $sql = require('./userSqlMapping');
 var rooms={ '355033': { hoster: '121176' } };
@@ -24,6 +25,36 @@ var jsonWrite = function (res, ret,err) {
   }
 };
 
+ function sendsms(name,mobi,msgid){
+   
+
+    var client = new Core({
+      accessKeyId: 'LTAIgkafE9961wJc',
+      accessKeySecret: 'ORpbiWeD1Qi00DbXNAc35uwziOj4m1',
+      endpoint: 'https://dysmsapi.aliyuncs.com',
+      apiVersion: '2017-05-25'
+    });
+
+    var params = {
+      "RegionId": "cn-hangzhou",
+      "PhoneNumbers": "13522039592",
+      "SignName": "传梦科技",
+      "TemplateCode": "SMS_159420799",
+      "TemplateParam": "{\"name\":\""+name+"\",\"number\":\""+mobi+"\"}"
+    }
+
+    var requestOption = {
+      method: 'POST'
+    };
+
+    client.request('SendSms', params, requestOption).then((result) => {
+      console.log(result);
+    }, (ex) => {
+      console.log(ex);
+    })
+
+  };
+
 function initPai(){
   return Arrayshuffle(allpai);
 };
@@ -40,6 +71,8 @@ function Arrayshuffle(arr) {
   }
   return input;
 };
+
+
 
 module.exports = {
   getuser: function (req, res, next) {
@@ -445,6 +478,73 @@ module.exports = {
       });
     });
   },
+
+   addtumsg: function (req, res, next) {
+    pool.getConnection(function(err, connection) {
+      // 获取前台页面传过来的参数
+      var param = req.body;
+      connection.query($sql.addtumsg, [param.name, param.mail, param.mobi, param.sheng, param.city,param.class,param.msg], function(errs, result) {
+        console.log(errs);
+
+         console.log('-----------');
+         console.log(result);
+         console.log(result.insertId);
+        if(result) {
+         // console.log(result);
+          result = {
+            code: 1,
+            msg:'增加成功'
+          };    
+        
+        // 以json形式，把操作结果返回给前台页面
+        sendsms(param.name, param.mobi,result.insertId);
+        jsonWrite(res, result,errs);
+        connection.release();          
+        }else{
+          result = {
+            code: 0,
+            msg:errs
+          };    
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result,errs);
+        connection.release();                
+        }
+      });
+    });
+  },
+
+  gettumsg: function (req, res, next) {
+    var smsid = req.query.smsid; 
+   
+    var time=Date.now();
+
+    pool.getConnection(function(err, connection) {
+      connection.query($sql.gettumsg, smsid, function(errs, result) {
+        console.log(result);
+        if (result=='') {
+            console.log(errs);
+             // console.log('-----------');
+            //  console.log(result);
+              result = {
+                code: 0,
+                msg:errs
+              };    
+            // 以json形式，把操作结果返回给前台页面
+            jsonWrite(res, result,errs);
+        }else{
+          console.log("--error--");
+          console.log(errs);
+          jsonWrite(res, result[0],errs);
+          connection.release();
+        }
+       
+ 
+      });
+    });
+  },
+
+ 
+
 
 
 

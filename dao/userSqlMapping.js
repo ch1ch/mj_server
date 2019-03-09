@@ -1,4 +1,7 @@
 var user = {
+  addtumsg:'insert into tulanduo(name,mail,mobi,sheng,city,class,msg) values(?,?,?,?,?,?,?);',
+  gettumsg: 'select * from tulanduo where id=?;',
+
 	addnewuser:'insert into user(openid,name,ico,card,tuijian,time) values(?,?,?,?,?,?);',
 	creatroom:'insert into room(roomid,hoster,user,type,rule,time) values(?,?,?,?,?,?);',
 	getuser: 'select * from user where openid=?;',
