@@ -39,9 +39,10 @@ var jsonWrite = function (res, ret,err) {
       "RegionId": "cn-hangzhou",
       "PhoneNumbers": "13522039592",
       "SignName": "传梦科技",
-      "TemplateCode": "SMS_159420799",
-      "TemplateParam": "{\"name\":\""+name+"\",\"number\":\""+mobi+"\"}"
+      "TemplateCode": "SMS_159772391",
+      "TemplateParam": "{\"name\":\""+name+"\",\"number\":\""+mobi+"\",\"smsid\":\""+msgid+"\"}"
     }
+	console.log(params)
 
     var requestOption = {
       method: 'POST'
@@ -489,6 +490,7 @@ module.exports = {
          console.log('-----------');
          console.log(result);
          console.log(result.insertId);
+		 sendsms(param.name, param.mobi,result.insertId);
         if(result) {
          // console.log(result);
           result = {
@@ -497,7 +499,7 @@ module.exports = {
           };    
         
         // 以json形式，把操作结果返回给前台页面
-        sendsms(param.name, param.mobi,result.insertId);
+        
         jsonWrite(res, result,errs);
         connection.release();          
         }else{
