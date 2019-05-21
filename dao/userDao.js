@@ -37,7 +37,7 @@ var jsonWrite = function (res, ret,err) {
 
     var params = {
       "RegionId": "cn-hangzhou",
-      "PhoneNumbers": "13522039592",
+      "PhoneNumbers": "18510071158",
       "SignName": "传梦科技",
       "TemplateCode": "SMS_159772391",
       "TemplateParam": "{\"name\":\""+name+"\",\"number\":\""+mobi+"\",\"smsid\":\""+msgid+"\"}"
